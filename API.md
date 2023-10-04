@@ -1,19 +1,32 @@
 # API приложения
 
-## 0. Get a web-page of authorization
+## 1. Static pages
+
+### 1.1. Main page
 ```
 {
     method: 'GET',
-    url: {url_page},
+    url: "/",
     headers: {
         'Accept': 'text/html'; charset=Utf-8,
     },
 }
 ```
 
-## 1. Authorization.
+### 1.2. Auth page
+```
+{
+    method: 'GET',
+    url: "/auth/",
+    headers: {
+        'Accept': 'text/html'; charset=Utf-8,
+    },
+}
+```
 
-### 1.1. Request with credentials: login, password
+## 2. Authorization.
+
+### 2.1. Request with credentials: login, password
 ```
 {
     method: 'POST',
@@ -28,21 +41,9 @@
 }
 ```
 
-### 1.2 Response with token
+### 2.2 Response with token
 
 > TODO
-
-## 2.  Get main page
-```
-{
-    method: 'GET',
-    url: {main_page},
-    headers: {
-        Accept: 'text/html',
-        Authorization: `Bearer ${token}`
-    }
-}
-```
 
 ## 3. Empolyee part
 
@@ -178,6 +179,7 @@
 ```
 
 ### 4.4 Employer downloads application document
+```
 {
     method: 'POST',
     url: {application_document_store_service_url},
@@ -189,6 +191,7 @@
         "application_id": "APPLICATION_ID"
     }
 } 
+```
 
 ## 5. Administrator part
 
