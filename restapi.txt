@@ -145,5 +145,5 @@
     body: {
         "application_id": "APPLICATION_ID"
     }
-}
+} 
 
