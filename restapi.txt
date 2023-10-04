@@ -3,33 +3,97 @@
     method: 'GET',
     url: {url_page},
     headers: {
-        Accept: 'text/html',
+        'Accept': 'text/html'; charset=Utf-8,
     },
 }
 
 1. Authorization.
 
-    1.1. Request with credentials: login, password
-
+1.1. Request with credentials: login, password
 {
     method: 'POST',
-    url: 
+    url: {authorization_server_url},
     headers: {
-        Authorization: `Basic &{credentials}`,
+        'Content-Type': 'application/json'
+    },
+    body: {
+        "username": "USERNAME",
+        "password": "PASSWORD"
     }
 }
-    1.2 Response with token
+
+1.2 Response with token
 
 {
 
 }
 
-2. Get main page for employee
+2. Empolyee part
+2.1  Get main page for employee
 {
     method: 'GET',
     url: {main_employee_page},
-    headers:{
-        Authorization: `Bearer ${token}`,
-        Content-Type: 'text/html',
+    headers: {
+        Accept: 'text/html',
+        Authorization: `Bearer ${token}`
     }
 }
+
+2.1.1 Get info about employee's vacations
+{
+    method: 'GET',
+    url: {employee_application_proccessing_service_url},
+    headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`
+    }
+}
+
+2.2 Employee creating application for his vacation
+{
+    method: 'POST',
+    url: {employee_application_proccessing_service_url},
+    headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+        Content-Type: 'application/json'
+    },
+    body: {
+        "start_date" : "START_DATE",
+        "end_date" : "END_DATE",
+        "amount_days" : "AMOUNT_DAYS"
+    }
+}
+
+2.3 Employee downloads application document
+{
+    method: 'POST',
+    url: {application_document_service_url},
+    headers: {
+        Accept: 'application/pdf'
+        Authorization: `Bearer ${token}`
+    }
+    body: {
+        ...
+    }
+}
+
+2.4 Employee deletes his application
+{
+    method: 'DELETE',
+    url: {employee_application_proccessing_service_url},
+    headers: {
+        Authorization: `Bearer ${token}`,
+        Content-Type: 'application/json'
+    }
+    body: {
+        "application_id": "APPLICATION_ID"
+    }
+}
+
+2.5
+
+
+3. Get main page for employer
+
+
