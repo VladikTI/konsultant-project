@@ -28,18 +28,20 @@
 
 }
 
-2. Empolyee part
-2.1  Get main page for employee
+2.  Get main page
 {
     method: 'GET',
-    url: {main_employee_page},
+    url: {main_page},
     headers: {
         Accept: 'text/html',
         Authorization: `Bearer ${token}`
     }
 }
 
-2.1.1 Get info about employee's vacations
+3. Empolyee part
+
+
+3.1 Get info about employee's vacations
 {
     method: 'GET',
     url: {employee_application_proccessing_service_url},
@@ -49,7 +51,7 @@
     }
 }
 
-2.2 Employee creating application for his vacation
+3.2 Employee creating application for new vacation
 {
     method: 'POST',
     url: {employee_application_proccessing_service_url},
@@ -65,12 +67,12 @@
     }
 }
 
-2.3 Employee downloads application document
+3.3 Employee downloads application document
 {
     method: 'POST',
-    url: {application_document_service_url},
+    url: {application_document_generator_service_url},
     headers: {
-        Accept: 'application/pdf'
+        Accept: 'application/pdf',
         Authorization: `Bearer ${token}`
     }
     body: {
@@ -78,7 +80,18 @@
     }
 }
 
-2.4 Employee deletes his application
+3.4 Employee uploads his application document 
+{
+    method: 'POST',
+    url: {application_document_store_service_url},
+    headers: {
+        Authorization: `Bearer &{token}`,
+        Content-Type: 'multipart/form-data'
+    }
+    body: formData
+}
+
+3.5 Employee deletes his application
 {
     method: 'DELETE',
     url: {employee_application_proccessing_service_url},
@@ -91,9 +104,46 @@
     }
 }
 
-2.5
 
 
-3. Get main page for employer
+4. Get main page for employer
 
+2.1.1 Get info about employee's vacations
+{
+    method: 'GET',
+    url: {employee_application_proccessing_service_url},
+    headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`
+    }
+}
+
+2.2 Employee creating new rule
+{
+    method: 'POST',
+    url: {rule_managment_service_url},
+    headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+        Content-Type: 'application/json'
+    },
+    body: {
+        "employees_ids": [{"id": ID}],
+        "rule": "RULE",
+        "status": "STATUS"
+    }
+}
+
+2.3 Employer downloads application document
+{
+    method: 'POST',
+    url: {application_document_store_service_url},
+    headers: {
+        Accept: 'application/pdf',
+        Authorization: `Bearer ${token}`
+    }
+    body: {
+        "application_id": "APPLICATION_ID"
+    }
+}
 
