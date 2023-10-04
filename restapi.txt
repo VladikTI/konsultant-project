@@ -1,0 +1,35 @@
+0. Get a web-page of authorization
+{
+    method: 'GET',
+    url: {url_page},
+    headers: {
+        Accept: 'text/html',
+    },
+}
+
+1. Authorization.
+
+    1.1. Request with credentials: login, password
+
+{
+    method: 'POST',
+    url: 
+    headers: {
+        Authorization: `Basic &{credentials}`,
+    }
+}
+    1.2 Response with token
+
+{
+
+}
+
+2. Get main page for employee
+{
+    method: 'GET',
+    url: {main_employee_page},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Content-Type: 'text/html',
+    }
+}
