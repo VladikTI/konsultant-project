@@ -1,4 +1,7 @@
-0. Get a web-page of authorization
+# API приложения
+
+## 0. Get a web-page of authorization
+```
 {
     method: 'GET',
     url: {url_page},
@@ -6,10 +9,12 @@
         'Accept': 'text/html'; charset=Utf-8,
     },
 }
+```
 
-1. Authorization.
+## 1. Authorization.
 
-1.1. Request with credentials: login, password
+### 1.1. Request with credentials: login, password
+```
 {
     method: 'POST',
     url: {authorization_server_url},
@@ -21,14 +26,14 @@
         "password": "PASSWORD"
     }
 }
+```
 
-1.2 Response with token
+### 1.2 Response with token
 
-{
+> TODO
 
-}
-
-2.  Get main page
+## 2.  Get main page
+```
 {
     method: 'GET',
     url: {main_page},
@@ -37,11 +42,12 @@
         Authorization: `Bearer ${token}`
     }
 }
+```
 
-3. Empolyee part
+## 3. Empolyee part
 
-
-3.1 Get info about employee's vacations
+### 3.1 Get info about employee's vacations
+```
 {
     method: 'GET',
     url: {application_proccessing_service_url},
@@ -54,8 +60,10 @@
         "employee_id": "EMPLOYEE_ID"
     }
 }
+```
 
-3.2 Employee creating application for new vacation
+### 3.2 Employee creating application for new vacation
+```
 {
     method: 'POST',
     url: {application_proccessing_service_url},
@@ -71,8 +79,10 @@
         "amount_days" : "AMOUNT_DAYS"
     }
 }
+```
 
-3.3 Employee downloads application document
+### 3.3 Employee downloads application document
+```
 {
     method: 'POST',
     url: {application_document_generator_service_url},
@@ -84,8 +94,10 @@
         "application_id": "APPLICATION_ID"
     }
 }
+```
 
-3.4 Employee uploads his application document 
+### 3.4 Employee uploads his application document 
+```
 {
     method: 'POST',
     url: {application_document_store_service_url},
@@ -95,8 +107,10 @@
     }
     body: formData
 }
+```
 
-3.5 Employee deletes his application
+### 3.5 Employee deletes his application
+```
 {
     method: 'DELETE',
     url: {application_proccessing_service_url},
@@ -108,11 +122,12 @@
         "application_id": "APPLICATION_ID"
     }
 }
+```
 
+## 4. Employer part
 
-4. Employer part
-
-4.1 Get employees applications
+### 4.1 Get employees applications
+```
 {
     method: 'GET',
     url: {application_proccessing_service_url},
@@ -124,9 +139,10 @@
         "employee_id": "EMPLOYEE_ID"
     }
 }
+```
 
-
-4.2 Employer accepts or declines employee application
+### 4.2 Employer accepts or declines employee application
+```
 {
     method: 'PUT',
     url: {application_proccessing_service_url},
@@ -140,8 +156,10 @@
         "comment": "COMMENT"
     }
 }
+```
 
-4.3 Employer creating new rule
+### 4.3 Employer creating new rule
+```
 {
     method: 'POST',
     url: {rule_managment_service_url},
@@ -157,8 +175,9 @@
         "status": "STATUS"
     }
 }
+```
 
-4.4 Employer downloads application document
+### 4.4 Employer downloads application document
 {
     method: 'POST',
     url: {application_document_store_service_url},
@@ -171,11 +190,10 @@
     }
 } 
 
+## 5. Administrator part
 
-5. Administrator part
-
-5.1. Get every employee
-
+### 5.1. Get every employee
+```
 {
     method: 'GET',
     url: {employees_storage_url},
@@ -184,6 +202,7 @@
         Accept: 'application/json'
     }
 }
+```
 
-5.2 Get every employer 
-
+### 5.2 Get every employer 
+> TODO
