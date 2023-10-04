@@ -44,23 +44,28 @@
 3.1 Get info about employee's vacations
 {
     method: 'GET',
-    url: {employee_application_proccessing_service_url},
+    url: {application_proccessing_service_url},
     headers: {
         Accept: 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        Content-Type: 'application/json',
+    },
+    body: {
+        "employee_id": "EMPLOYEE_ID"
     }
 }
 
 3.2 Employee creating application for new vacation
 {
     method: 'POST',
-    url: {employee_application_proccessing_service_url},
+    url: {application_proccessing_service_url},
     headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${token}`,
         Content-Type: 'application/json'
     },
     body: {
+        "employee_id": "EMPLOYEE_ID",
         "start_date" : "START_DATE",
         "end_date" : "END_DATE",
         "amount_days" : "AMOUNT_DAYS"
@@ -76,7 +81,7 @@
         Authorization: `Bearer ${token}`
     }
     body: {
-        ...
+        "application_id": "APPLICATION_ID"
     }
 }
 
@@ -94,7 +99,7 @@
 3.5 Employee deletes his application
 {
     method: 'DELETE',
-    url: {employee_application_proccessing_service_url},
+    url: {application_proccessing_service_url},
     headers: {
         Authorization: `Bearer ${token}`,
         Content-Type: 'application/json'
@@ -105,20 +110,38 @@
 }
 
 
+4. Employer part
 
-4. Get main page for employer
-
-2.1.1 Get info about employee's vacations
+4.1 Get employees applications
 {
     method: 'GET',
-    url: {employee_application_proccessing_service_url},
+    url: {application_proccessing_service_url},
     headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+    },
+    body: {
+        "employee_id": "EMPLOYEE_ID"
     }
 }
 
-2.2 Employee creating new rule
+
+4.2 Employer accepts or declines employee application
+{
+    method: 'PUT',
+    url: {application_proccessing_service_url},
+    headers: {
+        Authorization: `Bearer ${token},
+        Content-Type: 'application/json'
+    },
+    body: {
+        "application_id": "APPLICATION_ID",
+        "decision": "DECISION",
+        "comment": "COMMENT"
+    }
+}
+
+4.3 Employer creating new rule
 {
     method: 'POST',
     url: {rule_managment_service_url},
@@ -130,11 +153,12 @@
     body: {
         "employees_ids": [{"id": ID}],
         "rule": "RULE",
+        "expiration_date": "EXPIRATION_DATE"
         "status": "STATUS"
     }
 }
 
-2.3 Employer downloads application document
+4.4 Employer downloads application document
 {
     method: 'POST',
     url: {application_document_store_service_url},
@@ -146,4 +170,20 @@
         "application_id": "APPLICATION_ID"
     }
 } 
+
+
+5. Administrator part
+
+5.1. Get every employee
+
+{
+    method: 'GET',
+    url: {employees_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+    }
+}
+
+5.2 Get every employer 
 
