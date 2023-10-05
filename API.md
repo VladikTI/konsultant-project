@@ -225,39 +225,35 @@
 
 ## 5. API руководителя
 
-### 5.1. Получение информации о сотруднике 
-```
-{
-    method: 'GET',
-    url: {application_proccessing_service_url},
-    headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json'
-    },
-    body: {
-        "employee_id": "EMPLOYEE_ID"
-    }
-}
-```
+### 5.1. Получение информации о сотруднике
+*Пункт 3 для этих целей*
 
-### 4.2. Согласование заявки сотрудника
+### 5.2. Согласование заявки сотрудника
 ```
 {
-    method: 'PUT',
+    method: 'POST',
     url: {application_proccessing_service_url},
     headers: {
         Authorization: `Bearer ${token},
         Content-Type: 'application/json'
     },
     body: {
-        "application_id": "APPLICATION_ID",
-        "decision": "DECISION",
-        "comment": "COMMENT"
+        "application_id": APPLICATION_ID,
+        "decision": DECISION",
+        "comment": COMMENT"
     }
 }
 ```
 
-### 4.3. Создание правила
+### 5.2.1. Ответ сервера
+```
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+```
+
+### 5.3. Создание правила
 ```
 {
     method: 'POST',
@@ -276,7 +272,7 @@
 }
 ```
 
-### 4.4 Загрузка отчёта
+### 5.4. Загрузка отчёта
 ```
 {
     method: 'POST',
