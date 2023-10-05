@@ -253,7 +253,7 @@
 }
 ```
 
-### 5.3. Создание правила
+### 5.3. Создание нового правила руководителем
 ```
 {
     method: 'POST',
@@ -272,7 +272,15 @@
 }
 ```
 
-### 5.4. Загрузка отчёта
+### 5.3.1. Ответ сервера
+```
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+```
+
+### 5.4. Загрузка отчёта с сервера
 ```
 {
     method: 'POST',
@@ -285,4 +293,136 @@
         "application_id": "APPLICATION_ID"
     }
 } 
+```
+
+### 5.4.1. Ответ сервера
+```
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+```
+
+### 5.5. Получение всех сотрудников из базы для вывода на экран
+```
+{
+    method: 'GET',
+    url: {employees_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+    }
+}
+```
+
+### 5.5.1. Ответ сервера
+```
+{
+    "status": STATUS,
+    "message": MSG, 
+    "data":{
+        [{
+            "employee_id": EMPLOYEE_ID,
+            "name": NAME,
+            "position": POSITION,
+            "unit": UNIT
+        }]
+    }
+}
+```
+
+### 5.6. Получение всех подразделений для вывода на экран
+```
+{
+    method: 'GET',
+    url: {units_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+    }
+}
+```
+
+### 5.6.1 Ответ сервера
+```
+{
+    "status": STATUS,
+    "message": MSG, 
+    "data":{
+        [{"name": NAME}]
+    }
+}
+```
+
+### 5.7. Добавление нового сотрудника
+```
+{
+    method: 'POST',
+    url: {employees_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Content-Type:'application/json; charset=utf-8'
+    },
+    body: {
+        "name": NAME,
+        "position": POSITION,
+        "unit": UNIT
+    }
+}
+```
+
+### 5.7.1. Ответ сервера
+```
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+```
+
+### 5.8. Добавление нового подразделения
+```
+{
+    method: 'POST',
+    url: {units_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Content-Type:'application/json; charset=utf-8'
+    },
+    body: {
+        "name": NAME
+    }
+}
+```
+
+### 5.8.1. Ответ сервера
+```
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+```
+
+### 5.9. Редактирование информации о сотруднике
+```
+{
+    method: 'POST',
+    url: {employees_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Content-Type:'application/json; charset=utf-8'
+    },
+    body: {
+        "name": NAME,
+        "position": POSITION,
+        "unit": UNIT
+    }
+}
+```
+
+### 5.8.1. Ответ сервера
+```
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
 ```
