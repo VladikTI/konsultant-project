@@ -41,16 +41,29 @@
 }
 ```
 
+| Поле | Описание | Тип данных | Примечания |
+|------|----------|------------|------------|
+| _username_ | Имя пользователя. | **string** ||
+| _password_ | Пароль. | **string** ||
+
+
 Ответ:
 
 ```
 {
     token: "example_token",
-    refresh-token: "example_refresh_token",
-    expire-date: "0000-00-00T00:00:00",
-    refresh-date: "0000-00-00T00:00:00"
+    refresh_token: "example_refresh_token",
+    token_expire_date: "0000-00-00T00:00:00",
+    refresh_token_expire_date: "0000-00-00T00:00:00"
 }
 ```
+
+| Поле | Описание | Тип данных | Примечания |
+|------|----------|------------|------------|
+| _token_ | Токен аутентификации. | **string** | Токен в формате JWT |
+| _refresh_token_ | Токен повторной аутентификации. | **string** | Токен в формате JWT |
+| _token_expire_date_ | Срок действия токена аутентификации. | **string** | Время в формате YYYY-MM-DDTHH:MM:SS|
+| _refresh_token_expire_date_ | Срок действия токена повторной аутентификации. | **string** | Время в формате YYYY-MM-DDTHH:MM:SS|
 
 ## 3. API Сотрудника
 
