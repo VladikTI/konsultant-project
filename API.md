@@ -120,7 +120,7 @@
 ### 3.5. Удаление заявки
 ```
 {
-    method: 'DELETE',
+    method: 'POST',
     url: {application_proccessing_service_url},
     headers: {
         Authorization: `Bearer ${token}`,
