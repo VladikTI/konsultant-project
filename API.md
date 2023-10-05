@@ -1,8 +1,8 @@
 # API приложения
 
-## 1. Static pages
+## 1. Статичные страницы
 
-### 1.1. Main page
+### 1.1. Главная страница
 ```
 {
     method: 'GET',
@@ -13,7 +13,7 @@
 }
 ```
 
-### 1.2. Auth page
+### 1.2. Страница авторизации
 ```
 {
     method: 'GET',
@@ -24,9 +24,9 @@
 }
 ```
 
-## 2. Authorization.
+## 2. Авторизация
 
-### 2.1. Request with credentials: login, password
+### 2.1. Запрос авторизации
 ```
 {
     method: 'POST',
@@ -41,13 +41,20 @@
 }
 ```
 
-### 2.2 Response with token
+Ответ:
 
-> TODO
+```
+{
+    token: "example_token",
+    refresh-token: "example_refresh_token",
+    expire-date: "0000-00-00T00:00:00",
+    refresh-date: "0000-00-00T00:00:00"
+}
+```
 
-## 3. Empolyee part
+## 3. API Сотрудника
 
-### 3.1 Get info about employee's vacations
+### 3.1. Получение информации об отпусках сотрудника
 ```
 {
     method: 'GET',
@@ -63,7 +70,7 @@
 }
 ```
 
-### 3.2 Employee creating application for new vacation
+### 3.2. Подача заявки на отпуск
 ```
 {
     method: 'POST',
@@ -82,7 +89,7 @@
 }
 ```
 
-### 3.3 Employee downloads application document
+### 3.3. Загрузка неподписанного документа с сервера 
 ```
 {
     method: 'POST',
@@ -97,7 +104,7 @@
 }
 ```
 
-### 3.4 Employee uploads his application document 
+### 3.4. Загрузка подписанного документа на сервер
 ```
 {
     method: 'POST',
@@ -110,7 +117,7 @@
 }
 ```
 
-### 3.5 Employee deletes his application
+### 3.5. Удаление заявки
 ```
 {
     method: 'DELETE',
@@ -125,9 +132,9 @@
 }
 ```
 
-## 4. Employer part
+## 4. API руководителя
 
-### 4.1 Get employees applications
+### 4.1. Получение информации о сотруднике 
 ```
 {
     method: 'GET',
@@ -142,7 +149,7 @@
 }
 ```
 
-### 4.2 Employer accepts or declines employee application
+### 4.2. Согласование заявки сотрудника
 ```
 {
     method: 'PUT',
@@ -159,7 +166,7 @@
 }
 ```
 
-### 4.3 Employer creating new rule
+### 4.3. Создание правила
 ```
 {
     method: 'POST',
@@ -178,7 +185,7 @@
 }
 ```
 
-### 4.4 Employer downloads application document
+### 4.4 Загрузка отчёта
 ```
 {
     method: 'POST',
@@ -193,9 +200,9 @@
 } 
 ```
 
-## 5. Administrator part
+## 5. API администратора
 
-### 5.1. Get every employee
+### 5.1. Получение информации о всех сотрудниках
 ```
 {
     method: 'GET',
@@ -207,5 +214,5 @@
 }
 ```
 
-### 5.2 Get every employer 
+### 5.2 Получение списка всех сотрудников
 > TODO
