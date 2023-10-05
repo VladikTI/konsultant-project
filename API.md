@@ -199,20 +199,3 @@
     }
 } 
 ```
-
-## 5. API администратора
-
-### 5.1. Получение информации о всех сотрудниках
-```
-{
-    method: 'GET',
-    url: {employees_storage_url},
-    headers:{
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json'
-    }
-}
-```
-
-### 5.2 Получение списка всех сотрудников
-> TODO
