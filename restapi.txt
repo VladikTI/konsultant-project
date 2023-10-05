@@ -1,15 +1,14 @@
-0. Get a web-page of authorization
+0. Получение страницы авторизации
 {
     method: 'GET',
     url: {url_page},
     headers: {
-        'Accept': 'text/html'; charset=Utf-8,
+        'Accept': 'text/html; charset=Utf-8',
     },
 }
 
-1. Authorization.
-
-1.1. Request with credentials: login, password
+1. Авторизация.
+1.1. Запрос с передачей базовых полей: логина и пароля
 {
     method: 'POST',
     url: {authorization_server_url},
@@ -17,18 +16,22 @@
         'Content-Type': 'application/json'
     },
     body: {
-        "username": "USERNAME",
-        "password": "PASSWORD"
+        "username": USERNAME,
+        "password": PASSWORD
     }
 }
 
-1.2 Response with token
-
+1.2 Ответ с токеном
 {
-
+    "status": STATUS,
+    "access_token": token,
+    "token_type": "Bearer",
+    "expires_in": 3600,
+    "scope": SCOPE,
+    "user_id": USER_ID,
 }
 
-2.  Get main page
+2. Получение главной страницы
 {
     method: 'GET',
     url: {main_page},
@@ -38,10 +41,29 @@
     }
 }
 
-3. Empolyee part
+3. Запросы с аккаунта сотрудника
 
+3.1 Получение данных сотрудников для отображения расписания
+{
+    method: 'GET',
+    url: {employees_storage_url},
+    headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`
+    }
+}
 
-3.1 Get info about employee's vacations
+3.1.2 Ответ сервера
+{
+    "status": STATUS, 
+    "message": MSG,
+    "data": [{
+            "employee_id": EMPLOYEE_ID,
+            "name": NAME
+        }]
+}
+
+3.2 Получение заявок сотрудников для отображения графика
 {
     method: 'GET',
     url: {application_proccessing_service_url},
@@ -51,11 +73,26 @@
         Content-Type: 'application/json',
     },
     body: {
-        "employee_id": "EMPLOYEE_ID"
+        "employees": [{"employee_id": EMPLOYEE_ID}]
     }
 }
 
-3.2 Employee creating application for new vacation
+3.2.2 Ответ сервера 
+{
+    "status": STATUS,
+    "message": MSG,
+    "data":[
+        {
+            "employee_id": EMPLOYEE_ID,
+            "applications": [{ 
+                    "start_date": START_DATE,
+                    "amount_days": AMOUNT_DAYS
+                }]
+        }
+    ]
+}
+
+3.3 Создание сотрудником новой заявки
 {
     method: 'POST',
     url: {application_proccessing_service_url},
@@ -65,14 +102,21 @@
         Content-Type: 'application/json'
     },
     body: {
-        "employee_id": "EMPLOYEE_ID",
-        "start_date" : "START_DATE",
-        "end_date" : "END_DATE",
-        "amount_days" : "AMOUNT_DAYS"
+        "employee_id": EMPLOYEE_ID,
+        "start_date" : START_DATE,
+        "end_date" : END_DATE,
+        "amount_days" : AMOUNT_DAYS
     }
 }
 
-3.3 Employee downloads application document
+3.3.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG,
+    "data": {"application_id": APPLICATION_ID}
+}
+
+3.4 Запрос на скачивание заявления в отпуск в формате .pdf
 {
     method: 'POST',
     url: {application_document_generator_service_url},
@@ -81,11 +125,20 @@
         Authorization: `Bearer ${token}`
     }
     body: {
-        "application_id": "APPLICATION_ID"
+        "application_id": APPLICATION_ID
     }
 }
 
-3.4 Employee uploads his application document 
+3.4.2 Ответ сервера
+{
+    status: STATUS,
+    message: MSG,
+    url: {application_document_generator_service_url/example.pdf},
+    Content-Type: 'application/pdf',
+    Content-Disposition: 'attachment; filename="example.pdf"',
+}
+
+3.5 Загрузка подписанного заявления в отпуск
 {
     method: 'POST',
     url: {application_document_store_service_url},
@@ -96,52 +149,58 @@
     body: formData
 }
 
-3.5 Employee deletes his application
+3.5.2 Ответ сервера
 {
-    method: 'DELETE',
+    "status": STATUS,
+    "message": MSG
+}
+
+3.6 Удаление сотрудником своей заявки
+{
+    method: 'POST',
     url: {application_proccessing_service_url},
     headers: {
         Authorization: `Bearer ${token}`,
         Content-Type: 'application/json'
     }
     body: {
-        "application_id": "APPLICATION_ID"
+        "application_id": APPLICATION_ID
     }
 }
 
-
-4. Employer part
-
-4.1 Get employees applications
+3.6.2 Ответ сервера
 {
-    method: 'GET',
-    url: {application_proccessing_service_url},
-    headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json'
-    },
-    body: {
-        "employee_id": "EMPLOYEE_ID"
-    }
+    "status": STATUS,
+    "message": MSG
 }
 
+4. Запросы со страницы руководителя
 
-4.2 Employer accepts or declines employee application
+4.1 Получение данных о сотрудниках (пункт 3.1) и их заявках (пункт 3.2) для отображения графика
+
+4.2 Принятие решения руководителя о заявке
 {
-    method: 'PUT',
+    method: 'POST',
     url: {application_proccessing_service_url},
     headers: {
         Authorization: `Bearer ${token},
         Content-Type: 'application/json'
     },
     body: {
-        "application_id": "APPLICATION_ID",
-        "decision": "DECISION",
-        "comment": "COMMENT"
+        "application_id": APPLICATION_ID,
+        "decision": DECISION,
+        "comment": COMMENT
     }
 }
 
-4.3 Employer creating new rule
+4.2.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+
+
+4.3 Создание нового правила руководителем
 {
     method: 'POST',
     url: {rule_managment_service_url},
@@ -152,13 +211,19 @@
     },
     body: {
         "employees_ids": [{"id": ID}],
-        "rule": "RULE",
-        "expiration_date": "EXPIRATION_DATE"
-        "status": "STATUS"
+        "rule": RULE,
+        "expiration_date": EXPIRATION_DATE
+        "status": STATUS
     }
 }
 
-4.4 Employer downloads application document
+4.3.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+
+4.4 Запрос на скачивание заявления сотрудника в формате .pdf
 {
     method: 'POST',
     url: {application_document_store_service_url},
@@ -167,15 +232,22 @@
         Authorization: `Bearer ${token}`
     }
     body: {
-        "application_id": "APPLICATION_ID"
+        "application_id": APPLICATION_ID
     }
 } 
 
+4.4.2 Ответ сервера
+{
+    status: STATUS,
+    message: MSG,
+    url: {application_document_storage_service_url/example.pdf},
+    Content-Type: 'application/pdf',
+    Content-Disposition: 'attachment; filename="example.pdf"',
+}
 
-5. Administrator part
+5. Запросы для администрирования сервисов
 
-5.1. Get every employee
-
+5.1. Получение всех сотрудников для вывода на экран
 {
     method: 'GET',
     url: {employees_storage_url},
@@ -185,5 +257,181 @@
     }
 }
 
-5.2 Get every employer 
+5.1.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG, 
+    "data":{
+        [{
+            "employee_id": EMPLOYEE_ID,
+            "name": NAME,
+            "position": POSITION,
+            "unit": UNIT
+        }]
+    }
+}
 
+5.2 Получение всех руководителей для вывода на экран
+{
+    method: 'GET',
+    url: {employers_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+    }
+}
+
+5.2.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG, 
+    "data":{
+        [{
+            "employer_id": EMPLOYER_ID,
+            "name": NAME,
+            "position": POSITION,
+            "unit": UNIT
+        }]
+    }
+}
+
+5.3 Получение всех подразделений для вывода на экран
+{
+    method: 'GET',
+    url: {units_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+    }
+}
+
+5.3.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG, 
+    "data":{
+        [{"name": NAME}]
+    }
+}
+
+5.4 Добавление нового сотрудника
+{
+    method: 'POST',
+    url: {employees_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Content-Type:'application/json; charset=utf-8'
+    },
+    body: {
+        "name": NAME,
+        "position": POSITION,
+        "unit": UNIT
+    }
+}
+
+5.4.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+
+5.5 Добавление нового руководителя подразделения
+{
+    method: 'POST',
+    url: {employers_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Content-Type:'application/json; charset=utf-8'
+    },
+    body: {
+        "name": NAME,
+        "position": POSITION,
+        "unit": UNIT
+    }
+}
+
+5.5.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+
+5.6 Добавление нового подразделения
+{
+    method: 'POST',
+    url: {units_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Content-Type:'application/json; charset=utf-8'
+    },
+    body: {
+        "name": NAME
+    }
+}
+
+5.6.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+
+5.7 Редактирование информации о сотруднике
+{
+    method: 'POST',
+    url: {employees_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Content-Type:'application/json; charset=utf-8'
+    },
+    body: {
+        "name": NAME,
+        "position": POSITION,
+        "unit": UNIT
+    }
+}
+
+5.7.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+
+5.8 Редактирование информации о руководителе
+{
+    method: 'POST',
+    url: {employers_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Content-Type:'application/json; charset=utf-8'
+    },
+    body: {
+        "name": NAME,
+        "position": POSITION,
+        "unit": UNIT
+    }
+}
+
+5.8.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
+
+5.9 Редактирование информации о подразделении
+{
+    method: 'POST',
+    url: {units_storage_url},
+    headers:{
+        Authorization: `Bearer ${token}`,
+        Content-Type:'application/json; charset=utf-8'
+    },
+    body: {
+        "name": NAME
+    }
+}
+
+5.9.2 Ответ сервера
+{
+    "status": STATUS,
+    "message": MSG  // опциональное поле для сообщения об ошибке
+}
