@@ -3,7 +3,7 @@ FROM node:20
 WORKDIR /pvo-backend/
 
 COPY package.json /pvo-backend/
-RUN npm install fastify
+RUN npm install fastify nodemon
 
 EXPOSE 3000
 
