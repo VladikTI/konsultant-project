@@ -1,12 +1,14 @@
 drop table if exists employee, role, employee_role, 
-unit, employee_unit, file, request, rule cascade;
+unit, employee_unit, file, request, rule, authentication cascade;
 
 drop index if exists idx_employee_username, idx_employee_surname,
 idx_role_name, idx_employee_role_employee_id, idx_employee_role_role_id,
 idx_unit_name, idx_employee_unit_employee_id, idx_employee_unit_unit_id,
 idx_file_file_name, idx_file_file_type, idx_request_employee_id, 
 idx_request_start_date, idx_request_end_date, idx_request_status,
-idx_request_days, idx_rule_expiration_date, idx_rule_status cascade;
+idx_request_days, idx_rule_expiration_date, idx_rule_status,
+idx_authentication_token_expire_date, idx_authentication_refresh_token_expire_date
+cascade;
 
 create table employee
 (employee_id serial primary key, name varchar(50), surname varchar(50),
@@ -96,7 +98,14 @@ foreign key (updated_by) references employee (employee_id)
 create index idx_rule_expiration_date on rule (expiration_date);
 create index idx_rule_status on rule (status);
 
+create table authentication
+(employee_id integer, token varchar,
+refresh_token varchar, token_expire_date timestamp, 
+refresh_token_expire_date timestamp,
+updated_date timestamp, updated_by integer, 
+foreign key (employee_id) references employee (employee_id),
+foreign key (updated_by) references employee (employee_id)
+);
 
-
-
-
+create index idx_authentication_token_expire_date on authentication (token_expire_date);
+create index idx_authentication_refresh_token_expire_date on authentication (refresh_token_expire_date);
