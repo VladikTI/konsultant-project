@@ -1,0 +1,10 @@
+FROM node:20
+
+WORKDIR /pvo-backend/
+
+COPY package.json /pvo-backend/
+RUN npm install fastify
+
+EXPOSE 3000
+
+COPY . /pvo-backend/
