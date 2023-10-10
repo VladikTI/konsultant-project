@@ -7,3 +7,9 @@ services:
     volumes:
         - ./pvo-backend/:/pvo-backend/
         - /pvo-backend/node_modules
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: vacations
