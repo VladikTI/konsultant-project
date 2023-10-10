@@ -7,3 +7,4 @@ services:
     volumes:
         - ./pvo-backend/:/pvo-backend/
         - /pvo-backend/node_modules
+
