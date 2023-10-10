@@ -1,9 +1,19 @@
 FROM node:20
 
+RUN apt-get update && apt-get install -y postgresql postgresql-contrib
+
 WORKDIR /pvo-backend/
 
 COPY package.json /pvo-backend/
-RUN npm install fastify nodemon
+RUN npm install fastify nodemon pg @fastify/postgres fastify-jwt bcrypt @fastify/static
+
+COPY /init_db/create_db.sql /docker-entrypoint-initdb.d/
+
+COPY /init_db/tables_creating.sql /docker-entrypoint-initdb.d/
+
+ENV POSTGRES_USER=admin
+ENV POSTGRES_PASSWORD=admin
+ENV POSTGRES_DB=vacations
 
 EXPOSE 3000
 
