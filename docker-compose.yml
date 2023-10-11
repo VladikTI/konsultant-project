@@ -19,7 +19,7 @@ services:
         - ./pvo-frontend/public/:/pvo-frontend/public
         - ./pvo-frontend/src/:/pvo-frontend/src
         - /pvo-frontend/node_modules
-  db:
+  pvo-db:
     container_name: pvo-db
     image: postgres:latest
     environment:
