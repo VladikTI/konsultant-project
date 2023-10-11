@@ -16,8 +16,8 @@ services:
     ports:
         - "80:3000"
     volumes:
-        - ./pvo-frontend/public/:/pvo-frontend/public/
-        - ./pvo-frontend/src/:/pvo-frontend/src/
+        - ./pvo-frontend/public/:/pvo-frontend/public
+        - ./pvo-frontend/src/:/pvo-frontend/src
         - /pvo-frontend/node_modules
   db:
     container_name: pvo-db
@@ -26,3 +26,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: vacations
+    volumes:
+      - pvo-data:/pvo-data
+volumes:
+  pvo-data:
