@@ -8,7 +8,7 @@ services:
     volumes:
         - ./pvo-backend/public/:/pvo-backend/public/
         - ./pvo-backend/src/:/pvo-backend/src/
-        - /pvo-backend/node_modules
+        - backend-modules:/pvo-backend/node_modules
   pvo-frontend:
     container_name: pvo-frontend
     build: ./pvo-frontend
@@ -18,7 +18,7 @@ services:
     volumes:
         - ./pvo-frontend/public/:/pvo-frontend/public
         - ./pvo-frontend/src/:/pvo-frontend/src
-        - /pvo-frontend/node_modules
+        - frontend-modules:/pvo-frontend/node_modules
   pvo-db:
     container_name: pvo-db
     image: postgres:latest
@@ -27,6 +27,8 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: vacations
     volumes:
-      - pvo-data:/pvo-data
+      - pvo-data:/var/lib/postgresql/data
 volumes:
   pvo-data:
+  frontend-modules:
+  backend-modules:
