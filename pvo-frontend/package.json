@@ -16,7 +16,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "../../react-project/node_modules/.bin/react-scripts start",
+    "start": "./node_modules/.bin/react-scripts start",
     "build": "../../react-project/node_modules/.bin/react-scripts build",
     "test": "../../react-project/node_modules/.bin/react-scripts test",
     "eject": "../../react-project/node_modules/.bin/react-scripts eject"
