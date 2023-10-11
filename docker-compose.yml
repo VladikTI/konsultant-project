@@ -1,5 +1,6 @@
 services:
   pvo-backend:
+    container_name: pvo-backend
     build: ./pvo-backend
     command: npm run dev
     ports:
@@ -7,7 +8,17 @@ services:
     volumes:
         - ./pvo-backend/:/pvo-backend/
         - /pvo-backend/node_modules
+  pvo-frontend:
+    container_name: pvo-frontend
+    build: ./pvo-frontend
+    command: npm run start
+    ports:
+        - "80:3000"
+    volumes:
+        - ./pvo-frontend/:/pvo-frontend/
+        - /pvo-frontend/node_modules
   db:
+    container_name: pvo-db
     image: postgres:latest
     environment:
       POSTGRES_USER: admin
