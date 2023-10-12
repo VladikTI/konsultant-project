@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y postgresql postgresql-contrib
 WORKDIR /pvo-backend/
 
 COPY package.json /pvo-backend/
-RUN npm install fastify nodemon pg @fastify/postgres fastify-jwt bcrypt @fastify/static luxon
+RUN npm install fastify nodemon pg @fastify/postgres fastify-jwt bcrypt @fastify/static luxon crypto
 
 COPY /init_db/create_db.sql /docker-entrypoint-initdb.d/
 

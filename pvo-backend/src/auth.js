@@ -19,7 +19,7 @@ fastify.register(fastifyJwt, {
 const users = [];
 
 // Register route for user registration and JWT generation
-fastify.post('/auth', async (request, reply) => {
+fastify.post('/api/auth/', async (request, reply) => {
     const { username, password } = request.body;
   
     fastify.pg.query(
@@ -35,7 +35,7 @@ fastify.post('/auth', async (request, reply) => {
             } else {
                 // Сравниваем хешированный пароль из базы с введенным паролем и солью
                 const storedHashedPassword = result.rows[0].password;
-                const salt = result.rows[0].salt;
+                const salt = 2;
                 const isPasswordValid = await bcrypt.compare(bcrypt.hashpw(password, salt), storedHashedPassword);
             
                 if (isPasswordValid) {
@@ -65,7 +65,7 @@ fastify.post('/auth', async (request, reply) => {
 });
 
 
-fastify.post('/refresh', async (request, reply) => {
+fastify.post('/api/refresh/', async (request, reply) => {
     const { refresh_token } = request.body;
   
     // Проверьте валидность Refresh Token (по запросу к вашему серверу авторизации)
@@ -81,7 +81,7 @@ fastify.post('/refresh', async (request, reply) => {
     }
 });
   
-fastify.post('/refresh', async (request, reply) => {
+fastify.post('/api/refresh/', async (request, reply) => {
     const { refresh_token } = request.body;
   
     // Проверьте, есть ли Refresh Token в вашей базе данных
