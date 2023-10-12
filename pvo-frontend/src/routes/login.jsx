@@ -2,10 +2,10 @@ import {Alert, Box, Button, Container, TextField, ThemeProvider, Typography} fro
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import { createTheme } from '@mui/material/styles';
-import axios from "axios";
+import { instance } from "../api.config.js";
 
 export default function Login() {
-    useNavigate();
+    const navigate = useNavigate();
     const [error, setError] = useState("");
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
@@ -24,8 +24,9 @@ export default function Login() {
 
         // TODO: send the login request
         console.log("Logging in...");
-        axios.post("http://127.0.0.1:3000/auth", {username: login, password: password})
-            .then(response => console.log(response));
+        instance.post("http://127.0.0.1:3000/auth", {username: login, password: password})
+            .then(response => navigate("/users"))
+            .catch(error => console.error(error));
     }
 
     const theme = createTheme({
