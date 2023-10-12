@@ -1,25 +1,33 @@
 import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
-import path from'path'
+import path from 'path'
 import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import authRoutes from './auth.js';
+import addEmployeeRoutes from './addEmployee.js';
 
 const fastify = Fastify({
   logger: true
 })
 
+fastify.register(authRoutes);
 
-fastify.register(fastifyStatic, {
-    root: path.join(__dirname, 'public')
-});
+fastify.register(addEmployeeRoutes);
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 
-fastify.get('/', async (request, reply) => {
-    const filePath = path.join(__dirname, 'public', 'file.html');
-    return reply.type('text/html; charset="Utf-8"').sendFile('file.html');
-});
+
+
+// fastify.register(fastifyStatic, {
+//     root: path.join(__dirname, 'public')
+// });
+
+
+// fastify.get('/', async (request, reply) => {
+//     const filePath = path.join('../../pvo-frontend/src/routes', 'index.jsx');
+//     return reply.type('text/html; charset="Utf-8"').sendFile('filePath');
+// });
 
 const start = async () => {
   try {

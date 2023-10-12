@@ -7,79 +7,62 @@ import { DateTime } from 'luxon';
 const fastify = Fastify({ logger: true });
 
 fastify.register(fastifyPostgres, {
-    connectionString: 'postgres://postgres@localhost/postgres'
+    connectionString: 'postgres://admin@localhost/vacations'
 })
 
-// Register fastify-jwt with your secret key
-fastify.register(fastifyJwt, {
-    secret: 'your-secret-key', // Replace with a secure secret key
-});
+async function authRoutes (fastify, options){
+    // Register fastify-jwt with your secret key
+    fastify.register(fastifyJwt, {
+        secret: 'abcdef', // Replace with a secure secret key
+    });
 
-// Simulated user data (you should have a real database)
-const users = [];
 
-// Register route for user registration and JWT generation
-fastify.post('/api/auth/', async (request, reply) => {
-    const { username, password } = request.body;
-  
-    fastify.pg.query(
-        'SELECT employee_id, username, password, salt FROM employee WHERE username=$1', [username],
-        async function onResult (err, result) {
-            if (err) {
-                return reply.status(500).send({ error: 'Database error' });
-            }
+    console.log("12SDFASDFASDF");
+    // Register route for user registration and JWT generation
+    fastify.post('/api/auth/', async (request, reply) => {
+        const { username, password } = request.body;
         
-            if (result.rows.length === 0) {
-                // Пользователь с таким именем не найден
-                return reply.status(401).send({ error: 'Authentication failed' });
-            } else {
-                // Сравниваем хешированный пароль из базы с введенным паролем и солью
-                const storedHashedPassword = result.rows[0].password;
-                const salt = 2;
-                const isPasswordValid = await bcrypt.compare(bcrypt.hashpw(password, salt), storedHashedPassword);
-            
-                if (isPasswordValid) {
-                // Пароли совпадают, пользователь аутентифицирован
-                    
-                    // Generate a JWT token for the registered user
-                   
-
-                    fastify.pg.query(
-                        'INSERT INTO authentication (employee_id, token, refresh_token, token_expire_date, refresh_token_expire_date) VALUES ($1,$2, $3, $4, $5)', 
-                        [result.rows[0].employee_id, accessToken, refreshToken, tokenExpirationDateTime.toSQL(), refreshTokenExpirationDateTime.toSQL()],
-                        async function onResult (err, result) {
-                            if (err) {
-                                return reply.status(500).send({error: 'Database error'});
-                            }
-                        })
-                    
-                    return reply.code(201).send({token: accessToken, refresh_token: refreshToken, token_expire_date: tokenDateString, refresh_token_expire_date: refreshTokenDateString});
-                    
-                    
-                } else {
-                // Пароли не совпадают
-                    return reply.status(401).send({ error: 'Authentication failed' });
+        await fastify.pg.query(
+            'SELECT employee_id, username, password, salt FROM employee WHERE username=$1', [username],
+            async function onResult (err, result) {
+                if (err) {
+                    return reply.status(500).send({ error: 'Database error' });
                 }
-            }
-        })
-});
+                
+                if (result.rows.length === 0) {
+                    // Пользователь с таким именем не найден
+                    return reply.status(401).send({ error: 'Authentication failed' });
+                } else {
+                    // Сравниваем хешированный пароль из базы с введенным паролем и солью
+                    const storedHashedPassword = result.rows[0].password;
+                    const isPasswordValid = await bcrypt.compare(password, storedHashedPassword);
+                
+                    if (isPasswordValid) {
+                    // Пароли совпадают, пользователь аутентифицирован
 
+                        // Generate a JWT token for the registered user
+                    
 
-fastify.post('/api/refresh/', async (request, reply) => {
-    const { refresh_token } = request.body;
-  
-    // Проверьте валидность Refresh Token (по запросу к вашему серверу авторизации)
-    // Здесь вы должны проверить Refresh Token в вашем хранилище
-    // и удостовериться, что он действителен и принадлежит конкретному пользователю
-  
-    // Если Refresh Token действителен, создайте новый Access Token
-    if (isValidRefreshToken(refresh_token)) {
-        const newAccessToken = fastify.jwt.sign({ username: 'user' }, { expiresIn: '5m' });
-        reply.send({ access_token: newAccessToken });
-    } else {
-        reply.code(401).send({ error: 'Invalid Refresh Token' });
-    }
-});
+                        await fastify.pg.query(
+                            'INSERT INTO authentication (employee_id, token, refresh_token, token_expire_date, refresh_token_expire_date) VALUES ($1,$2, $3, $4, $5)', 
+                            [result.rows[0].employee_id, accessToken, refreshToken, tokenExpirationDateTime.toSQL(), refreshTokenExpirationDateTime.toSQL()],
+                            async function onResult (err, result) {
+                                if (err) {
+                                    return reply.status(500).send({error: 'Database error'});
+                                }
+                            })
+                        
+                        return reply.code(201).send({token: accessToken, refresh_token: refreshToken, token_expire_date: tokenDateString, refresh_token_expire_date: refreshTokenDateString});
+                        
+                        console.log("someth");
+                    } else {
+                    // Пароли не совпадают
+                        return reply.status(401).send({ error: 'Authentication failed' });
+                    }
+                }
+            })
+    });
+};
   
 fastify.post('/api/refresh/', async (request, reply) => {
     const { refresh_token } = request.body;
@@ -155,12 +138,14 @@ function generateAccessToken(employee_id) {
         const refreshTokenExpirationDateTime = DateTime.now().plus({minutes: refreshTokenExpiresInMinutes});
         const username = rows[0].username;
         const accessToken = fastify.jwt.sign({ username }, {expiresIn: tokenExpiresInMinutes * 60});
-        const refreshToken = fastify.jwt.sign({username}, 'refresh-secret-key', {expiresIn: refreshTokenExpiresInMinutes * 60});
+        const refreshToken = fastify.jwt.sign({username}, 'rabcdef', {expiresIn: refreshTokenExpiresInMinutes * 60});
     // Note: avoid doing expensive computation here, this will block releasing the client
         return {accessToken, refreshToken, tokenExpirationDateTime, refreshTokenExpirationDateTime};
     } finally {
         // Release the client immediately after query resolves, or upon error
-        client.release()
+        client.release();
     }
 }
-  
+
+
+export default authRoutes;

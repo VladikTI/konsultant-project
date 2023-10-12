@@ -1,8 +1,14 @@
-import {randomBytes} from 'crypto';
+import Fastify from 'fastify';
+import bcrypt from 'bcrypt';
+import fastifyPostgres from '@fastify/postgres';
 
-async function routes (fastify, options){
+const fastify = Fastify({
+    logger: true
+  })
+
+async function addEmployeeRoutes (fastify, options){
     fastify.register(fastifyPostgres, {
-        connectionString: 'postgres://postgres@localhost/postgres'
+        connectionString: 'postgres://admin:admin@localhost/vacations'
     })
 
     const employeeBodyJsonSchema = {
@@ -98,4 +104,4 @@ async function insertEmployeeUnit(client, employee_id, unit_id, user_id){
     }
 }
 
-module.exports = routes;
+export default addEmployeeRoutes;
