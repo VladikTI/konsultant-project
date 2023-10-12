@@ -1,0 +1,21 @@
+.centered-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Высота контейнера будет равной высоте видимой области окна браузера */
+}
+
+.blue-button {
+    background-color: #00A3FF;
+    color: black;
+    height: 80px; /* Фиксированная высота кнопок */
+    width: 200px;
+    margin: 20px; /* Расстояние между кнопками */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
