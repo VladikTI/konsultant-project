@@ -1,0 +1,52 @@
+.centered-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Высота контейнера будет равной высоте видимой области окна браузера */
+}
+
+.blue-button {
+    background-color: #00A3FF;
+    color: black;
+    height: 80px; /* Фиксированная высота кнопок */
+    width: 200px;
+    margin: 20px; /* Расстояние между кнопками */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form_container {
+    display: flex;
+    flex-direction: column; /* Определяем вертикальное расположение элементов */
+    align-items: center; /* Центрирование по горизонтали */
+    height: 100vh;
+    justify-content: center; /* Центрирование по вертикали */
+}
+
+.form1 {
+    max-width: 400px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.back_link {
+    text-align: center; /* Выравнивание текста по центру */
+    margin-top: 10px; /* Отступ сверху */
+    background-color: #00A3FF;
+    color: black;
+    height: 40px; /* Фиксированная высота кнопок */
+    width: 100px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+

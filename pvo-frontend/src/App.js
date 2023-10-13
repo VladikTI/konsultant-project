@@ -4,8 +4,10 @@ import { observer } from "mobx-react-lite";
 import AuthStore from "./store.js";
 import PrivateRoute from "./privateRoute.js";
 
-import LoginPage from "./routes/login";
+import LoginPage from "./routes/login.jsx";
 import UsersPage from "./routes/usersPage";
+import AdminPage from "./routes/admin";
+import EditingPage from "./routes/editing";
 
 const App = observer(() => {
 
@@ -24,6 +26,10 @@ const App = observer(() => {
             <Route path="" element={<UsersPage />} />
             <Route path=":id" element={<UsersPage />} />
           </Route>
+
+          <Route path="/admin" element={<AdminPage />} />
+
+          <Route path="/editing" element={<EditingPage />} />
 
           <Route path="*" element={<div>404... not found </div>} />
         </Routes>
