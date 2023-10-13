@@ -24,7 +24,12 @@ export default function Login() {
 
         // TODO: send the login request
         console.log("Logging in...");
-        instance.post("http://127.0.0.1:3000/auth", {username: login, password: password})
+        instance.post("http://127.0.0.1:3000/auth", {username: login, password: password}, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token"),
+                'Content-Type': 'application/json',
+            }
+        })
             .then(response => navigate("/users"))
             .catch(error => console.error(error));
     }
