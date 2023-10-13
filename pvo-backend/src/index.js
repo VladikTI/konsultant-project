@@ -3,20 +3,21 @@ import fastifyStatic from '@fastify/static'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import authRoutes from './auth.js';
-import addEmployeeRoutes from './addEmployee.js';
+import employeeRoutes from './employee.js';
+import dbconnector from './db.js'
 
 const fastify = Fastify({
   logger: true
 })
 
+fastify.register(dbconnector);
+
 fastify.register(authRoutes);
 
-fastify.register(addEmployeeRoutes);
+fastify.register(employeeRoutes);
 
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
-
-
 
 
 // fastify.register(fastifyStatic, {
@@ -24,10 +25,10 @@ fastify.register(addEmployeeRoutes);
 // });
 
 
-// fastify.get('/', async (request, reply) => {
-//     const filePath = path.join('../../pvo-frontend/src/routes', 'index.jsx');
-//     return reply.type('text/html; charset="Utf-8"').sendFile('filePath');
-// });
+fastify.get('/', async (request, reply) => {
+  const a = request.body
+    return reply.type('application/json').send(a);
+});
 
 const start = async () => {
   try {

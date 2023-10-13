@@ -1,1 +1,0 @@
-create database vacations if not exitsts;
