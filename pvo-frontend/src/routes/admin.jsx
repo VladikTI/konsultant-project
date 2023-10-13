@@ -1,14 +1,14 @@
 import React from 'react';
 import './styles/style.css';
+import {Link} from 'react-router-dom';
 function Admin() {
     return (
         <div className="centered-container">
-            <button className="blue-button">Создать отдел</button>
-            <button className="blue-button">Редактировать отдел</button>
-            <button className="blue-button">Удалить отдел</button>
-            <button className="blue-button">Добавить сотрудника вне отдела</button>
+            <Link to="/editing" className="blue-button">Создать отдел</Link>
+            <Link to="/editing" className="blue-button">Редактировать отдел</Link>
+            <Link to="/editing" className="blue-button">Удалить отдел</Link>
+            <Link to="/editing" className="blue-button">Добавить сотрудника вне отдела</Link>
         </div>
     );
 }
-
 export default Admin;

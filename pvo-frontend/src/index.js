@@ -4,6 +4,7 @@ import {createBrowserRouter, Navigate, RouterProvider} from "react-router-dom";
 import Login from "./routes/login";
 import ErrorPage from "./error-page";
 import Admin from "./routes/admin";
+import Editing from "./routes/editing"
 
 const router = createBrowserRouter([
     {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
     {
         path: "/admin",
         element: <Admin/>,
+    },
+    {
+        path: "/editing",
+        element: <Editing/>,
     },
 ]);
 
