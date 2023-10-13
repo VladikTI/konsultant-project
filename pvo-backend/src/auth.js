@@ -1,17 +1,14 @@
 import Fastify from 'fastify';
 import bcrypt from 'bcrypt';
 import fastifyJwt from 'fastify-jwt';
-// import fastifyPostgres from '@fastify/postgres';
 import { DateTime } from 'luxon';
 import dbconnector from './db.js';
+import findUserId from './user_utils.js';
 
 const fastify = Fastify({ logger: true });
 
-fastify.register(dbconnector);
 
-// fastify.register(fastifyPostgres, {
-//     connectionString: 'postgres://admin:admin@localhost/vacations'
-// })
+fastify.register(dbconnector);
 
 async function authRoutes (fastify, options){
     // Register fastify-jwt with your secret key
@@ -21,19 +18,14 @@ async function authRoutes (fastify, options){
     // Register route for user registration and JWT generation
     fastify.post('/auth', async (request, reply) => {
         const client = fastify.db.client;
-        console.log(request.body);
         const { username, password } = request.body;
         try {
-            console.log("2");
             const {rows} = await client.query('SELECT employee_id, username, password FROM employee WHERE username=$1', [username]);
-            console.log("3");
             if (rows.length === 0) {
-                console.log("4");
                 // Пользователь с таким именем не найден
                 return reply.status(401).send({ error: 'Authentication failed' });
             } else {
                 // Сравниваем хешированный пароль из базы с введенным паролем и солью
-                console.log("5");
                 const storedHashedPassword = rows[0].password;
                 const isPasswordValid = await bcrypt.compare(password, storedHashedPassword);
             
@@ -72,10 +64,12 @@ async function authRoutes (fastify, options){
       
     fastify.post('/api/refresh/', async (request, reply) => {
 
-        const { refresh_token, employee_id } = request.body;
         // Проверьте, есть ли Refresh Token в вашей базе данных
-        const storedAuthTokens = await findRefreshTokenInDatabase(refresh_token);
-    
+        const refreshTokenString = request.headers.authorization.replace('Bearer ', '');
+        const storedAuthTokens = await findRefreshTokenInDatabase(refreshTokenString);
+        
+        const employee_id = await findUserId(client, refreshTokenString);
+
         if (!storedAuthTokens) {
             reply.code(401).send({ error: 'Invalid Refresh Token' });
             return;
@@ -107,7 +101,7 @@ async function authRoutes (fastify, options){
         return new Promise( async (resolve, reject) => {
             const client = fastify.db.client;
             try {
-                const {rows} = await client.query('SELECT refresh_token FROM authorization WHERE refresh_token=$1;', [refreshToken]);
+                const {rows} = await client.query('SELECT refresh_token FROM authentication WHERE refresh_token=$1;', [refreshToken]);
                 if (rows.length === 0) {
                     resolve(null);
                     return; // Если Refresh Token не найден, возвращаем null
@@ -116,7 +110,6 @@ async function authRoutes (fastify, options){
                     return;
                 }
             } catch (err) {
-                client.release();
                 reject(err);
                 return;
             }

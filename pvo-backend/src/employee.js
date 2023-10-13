@@ -1,12 +1,15 @@
 import Fastify from 'fastify';
 import bcrypt from 'bcrypt';
 import dbconnector from './db.js';
+import userUtils from './user_utils.js';
 
 const fastify = Fastify({
     logger: true
 })
 
 fastify.register(dbconnector);
+
+fastify.register(userUtils);
 
 async function employeeRoutes (fastify, options){
 
@@ -127,18 +130,7 @@ async function employeeRoutes (fastify, options){
         }
     }
 
-    async function findUserId(client, token){
-        try {
-            const {rows} = await client.query(
-                'SELECT employee_id FROM authentication WHERE token=$1;',
-                [token]
-            );
-            return rows[0].employee_id;
-        }  catch (err) {
-            console.log('Find User Id Error: ', err);
-            throw new Error(err);
-        }
-    }
+
 }
 
 
