@@ -1,7 +1,5 @@
 import Fastify from 'fastify';
 import bcrypt from 'bcrypt';
-// import fastifyPostgres from '@fastify/postgres';
-
 import dbconnector from './db.js';
 
 const fastify = Fastify({
@@ -34,9 +32,9 @@ async function employeeRoutes (fastify, options){
         const salt = await bcrypt.genSaltSync(10);
         const hashedPassword = await bcrypt.hashSync(req_data.password, salt);
 
-        // const user_id = findUserId(client, token);
-        const user_id = 1;
-        
+        const user_id = await findUserId(client, request.headers.authorization.replace('Bearer ', ''));
+
+
         try {
             const insert_data = {
                 name: req_data.name,
@@ -48,14 +46,9 @@ async function employeeRoutes (fastify, options){
                 available_vacation: req_data.available_vacation,
                 user_id: user_id
             }
-
-            console.log(insert_data);
-
             const employee_id = await insertEmployee(client, insert_data);
-            
-            const role_id = await insertRole(client, request.body);
 
-            await insertEmployeeRole(client, employee_id, role_id, user_id);
+            await insertEmployeeRole(client, employee_id, req_data.role_id, user_id);
             
             await insertEmployeeUnit(client, employee_id, req_data.unit_id, user_id);
         } catch (err) {
@@ -78,7 +71,7 @@ async function employeeRoutes (fastify, options){
     async function updateEmployee(client, insert_data){
         try {
             const { rows } = await client.query(
-                'UPDATE employee SET name = $1, surname = $2, patronymic = $3, position = $4, username = $5, password = $6, available_vacation = $7, updated_date = NOW()::datetime, updated_by = $8 WHERE employee_id = $9',
+                'UPDATE employee SET name = $1, surname = $2, patronymic = $3, position = $4, username = $5, password = $6, available_vacation = $7, updated_date = NOW(), updated_by = $8 WHERE employee_id = $9',
                 [insert_data.name, insert_data.surname, insert_data.patronymic, insert_data.position, insert_data.username, 
                     insert_data.password, insert_data.available_vacation, insert_data.user_id, inser_data.employee_id],
             );
@@ -93,7 +86,7 @@ async function employeeRoutes (fastify, options){
     async function insertEmployee(client, insert_data){
         try {
             const { rows } = await client.query(
-                'INSERT INTO employee(name, surname, patronymic, position, username, password, available_vacation, updated_date, updated_by) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()::timestamp, $8) RETURNING employee_id',
+                'INSERT INTO employee(name, surname, patronymic, position, username, password, available_vacation, updated_date, updated_by) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8) RETURNING employee_id;',
                 [insert_data.name, insert_data.surname, insert_data.patronymic, insert_data.position, insert_data.username, 
                     insert_data.password, insert_data.available_vacation, insert_data.user_id],
             );
@@ -104,27 +97,13 @@ async function employeeRoutes (fastify, options){
             return;
         }
     }
-    
-    async function insertRole(client, insert_data){
-        try {
-            const { rows } = await client.query(
-                'INSERT INTO role(name, updated_date, updated_by) VALUES ($1, NOW()::timestamp, $2) RETURNING role_id',
-                [insert_data.name, insert_data.user_id],
-            );
-          // Note: avoid doing expensive computation here, this will block releasing the client
-            return rows[0].role_id;
-        }  catch (err) {
-            console.error("InsertRoleError: ", err);
-            return;
-        }
-    }
-    
+
     
     async function insertEmployeeRole(client, employee_id, role_id, user_id){
         try {
             const { rows } = await client.query(
-                'INSERT INTO employee_role (employee_id, role_id, NOW()::timestamp, updated_by) VALUES ($1, $2, NOW()::timestamp, $3)', 
-                [employee_id, role_id, user_id]
+                'INSERT INTO employee_role (employee_id, role_id, updated_date, updated_by) VALUES ($1, $2, NOW(), $3);', 
+                [employee_id, role_id, user_id],
             );
           // Note: avoid doing expensive computation here, this will block releasing the client
             return;
@@ -137,7 +116,7 @@ async function employeeRoutes (fastify, options){
     async function insertEmployeeUnit(client, employee_id, unit_id, user_id){
         try {
             const { rows } = await client.query(
-                'INSERT INTO employee_unit (employee_id, unit_id, NOW()::timestamp, updated_by) VALUES ($1, $2, NOW()::timestamp, $3)',
+                'INSERT INTO employee_unit (employee_id, unit_id, updated_date, updated_by) VALUES ($1, $2, NOW(), $3)',
                 [employee_id, unit_id, user_id]
             );
           // Note: avoid doing expensive computation here, this will block releasing the client
