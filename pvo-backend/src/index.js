@@ -1,7 +1,7 @@
 import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
 import path from 'path'
-import { fileURLToPath } from 'url';
+
 import authRoutes from './auth.js';
 import employeeRoutes from './employee.js';
 import dbconnector from './db.js'
@@ -10,11 +10,13 @@ const fastify = Fastify({
   logger: true
 })
 
+
 fastify.register(dbconnector);
 
 fastify.register(authRoutes);
 
 fastify.register(employeeRoutes);
+
 
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);

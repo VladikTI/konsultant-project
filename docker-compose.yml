@@ -2,6 +2,7 @@ services:
   pvo-backend:
     container_name: pvo-backend
     build: ./pvo-backend
+    depends_on: pvo-db
     command: npm run dev
     ports:
         - "3000:3000"
@@ -26,7 +27,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: vacations
-      # PGDATA: "/var/lib/postgresql/data/pgdata"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       # copy the sql script to create tables
       - ./init_db/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql

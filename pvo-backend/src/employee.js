@@ -1,15 +1,13 @@
 import Fastify from 'fastify';
 import bcrypt from 'bcrypt';
 import dbconnector from './db.js';
-import userUtils from './user_utils.js';
+import { findUserId } from './user_utils.js';
 
 const fastify = Fastify({
     logger: true
 })
 
 fastify.register(dbconnector);
-
-fastify.register(userUtils);
 
 async function employeeRoutes (fastify, options){
 
@@ -28,14 +26,14 @@ async function employeeRoutes (fastify, options){
         }
     }
 
-    fastify.post('/api/add_employee/', employeeBodyJsonSchema, async(request, reply) => {
+    fastify.post('/api/add_employee', employeeBodyJsonSchema, async(request, reply) => {
 
         const client = await fastify.db.client;
         const req_data = await request.body;
         const salt = await bcrypt.genSaltSync(10);
         const hashedPassword = await bcrypt.hashSync(req_data.password, salt);
 
-        const user_id = await findUserId(client, request.headers.authorization.replace('Bearer ', ''));
+        const user_id = await findUserId(request.headers.authorization.replace('Bearer ', ''));
 
 
         try {

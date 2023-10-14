@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import dbconnector from './db.js';
+// import fastifyPlugin from 'fastify-plugin';
 
 const fastify = Fastify({
     logger: true
@@ -7,7 +8,7 @@ const fastify = Fastify({
 
 fastify.register(dbconnector);
 
-async function findUserId(client, token) {
+export async function findUserId(token) {
     try {
         const {rows} = await client.query(
             'SELECT employee_id FROM authentication WHERE refresh_token=$1;',
@@ -19,5 +20,3 @@ async function findUserId(client, token) {
         throw new Error(err);
     }
 }
-
-export default findUserId;

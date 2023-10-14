@@ -3,18 +3,20 @@ import bcrypt from 'bcrypt';
 import fastifyJwt from 'fastify-jwt';
 import { DateTime } from 'luxon';
 import dbconnector from './db.js';
-import findUserId from './user_utils.js';
+import {findUserId} from './user_utils.js';
 
 const fastify = Fastify({ logger: true });
-
 
 fastify.register(dbconnector);
 
 async function authRoutes (fastify, options){
+
     // Register fastify-jwt with your secret key
     fastify.register(fastifyJwt, {
         secret: 'abcdef',
     });
+
+
     // Register route for user registration and JWT generation
     fastify.post('/auth', async (request, reply) => {
         const client = fastify.db.client;
@@ -29,8 +31,7 @@ async function authRoutes (fastify, options){
                 const storedHashedPassword = rows[0].password;
                 const isPasswordValid = await bcrypt.compare(password, storedHashedPassword);
             
-                if (isPasswordValid) {
-                // Пароли совпадают, пользователь аутентифицирован
+                if (isPasswordValid) { // Пароли совпадают, пользователь аутентифицирован
 
                     // Generate a JWT token for the registered user
                     const newAccessToken = await generateAccessToken(rows[0].employee_id)
@@ -50,8 +51,9 @@ async function authRoutes (fastify, options){
                     return reply.code(201).send({"token": newAccessToken.token, "refresh_token": newAccessToken.refresh_token,
                         "token_expire_date": DateTime.local(newAccessToken.token_expire_date).toString(), 
                         "refresh_token_expire_date": DateTime.local(newAccessToken.refresh_token_expire_date).toString()});
-                } else {
-                // Пароли не совпадают
+                
+                } else { // Пароли не совпадают
+
                     return reply.status(401).send({ error: 'Authentication failed' });
                 }
             }
@@ -68,7 +70,7 @@ async function authRoutes (fastify, options){
         const refreshTokenString = request.headers.authorization.replace('Bearer ', '');
         const storedAuthTokens = await findRefreshTokenInDatabase(refreshTokenString);
         
-        const employee_id = await findUserId(client, refreshTokenString);
+        const employee_id = await findUserId(refreshTokenString);
 
         if (!storedAuthTokens) {
             reply.code(401).send({ error: 'Invalid Refresh Token' });
@@ -94,7 +96,6 @@ async function authRoutes (fastify, options){
         "token_expire_date": newAccessToken.tokenExpirationDateTime,
         "refresh_token_expire_date": newAccessToken.refreshTokenExpirationDateTime});
     });
-    // Ваши функции для работы с базой данных и генерации токенов
 
     function findRefreshTokenInDatabase(refreshToken) {
         
@@ -133,10 +134,10 @@ async function authRoutes (fastify, options){
             console.log('employee_id: ',employee_id);
             console.log('rows: ', rows);
             const tokenExpiresInMinutes = 60;
-            const tokenExpirationDateTime = DateTime.local().plus({minutes: tokenExpiresInMinutes});
+            const tokenExpirationDateTime = DateTime.local(DateTime.now()).plus({minutes: tokenExpiresInMinutes});
     
             const refreshTokenExpiresInMinutes = 60*24;
-            const refreshTokenExpirationDateTime = DateTime.now().plus({minutes: refreshTokenExpiresInMinutes});
+            const refreshTokenExpirationDateTime = DateTime.local(DateTime.now()).plus({minutes: refreshTokenExpiresInMinutes});
             const username = rows[0].username;
             const accessToken = fastify.jwt.sign({ username }, {expiresIn: tokenExpiresInMinutes * 60});
             const refreshToken = fastify.jwt.sign({username}, 'rabcdef', {expiresIn: refreshTokenExpiresInMinutes * 60});
