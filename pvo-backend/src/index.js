@@ -27,10 +27,9 @@ fastify.register(employeeRoutes);
 // });
 
 
-fastify.get('/', async (request, reply) => {
-  const a = request.body
-    return reply.type('application/json').send(a);
-});
+// fastify.get('/admin', async (request, reply) => {
+    // const token = request.headers.authorization
+// });
 
 const start = async () => {
   try {

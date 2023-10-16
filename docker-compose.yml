@@ -14,6 +14,8 @@ services:
   pvo-frontend:
     container_name: pvo-frontend
     build: ./pvo-frontend
+    # depends_on: 
+    #     - pvo-db
     command: npm run start
     ports:
         - "80:3000"
