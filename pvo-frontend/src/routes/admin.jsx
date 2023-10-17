@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import {Button, TextField} from "@mui/material";
+import axios from "axios";
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -41,9 +42,41 @@ function a11yProps(index) {
 
 export default function BasicTabs() {
     const [value, setValue] = React.useState(0);
+    const token = localStorage.getItem('token');
+    const [employeeData, setEmployeeData] = React.useState({
+        name: '',
+        surname: '',
+        patronymic: '',
+        position: '',
+        username: '',
+        password: '',
+        unit_id: '',
+        available_vacation: '',
+        role_id: '',
+    });
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
+    };
+
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setEmployeeData({ ...employeeData, [name]: value });
+    };
+
+    const handleAddEmployee = () => {
+        axios
+            .post('/api/add_employee', employeeData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+            .then((response) => {
+                // Обработка успешного ответа от сервера
+            })
+            .catch((error) => {
+                console.error('Ошибка при отправке запроса:', error);
+            });
     };
 
     return (
@@ -66,6 +99,8 @@ export default function BasicTabs() {
                         label="Имя"
                         variant="outlined"
                         fullWidth
+                        value={employeeData.name}
+                        onChange={handleInputChange}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -73,6 +108,8 @@ export default function BasicTabs() {
                         label="Фамилия"
                         variant="outlined"
                         fullWidth
+                        value={employeeData.surname}
+                        onChange={handleInputChange}
                     />
                     </Box>
                         <Box marginBottom={2}>
@@ -80,6 +117,8 @@ export default function BasicTabs() {
                         label="Отчество"
                         variant="outlined"
                         fullWidth
+                        value={employeeData.patronymic}
+                        onChange={handleInputChange}
                     />
                         </Box>
                     <Box marginBottom={2}>
@@ -87,6 +126,8 @@ export default function BasicTabs() {
                         label="Должность"
                         variant="outlined"
                         fullWidth
+                        value={employeeData.position}
+                        onChange={handleInputChange}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -94,6 +135,8 @@ export default function BasicTabs() {
                         label="Логин"
                         variant="outlined"
                         fullWidth
+                        value={employeeData.username}
+                        onChange={handleInputChange}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -102,6 +145,8 @@ export default function BasicTabs() {
                         variant="outlined"
                         fullWidth
                         type="password"
+                        value={employeeData.password}
+                        onChange={handleInputChange}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -109,6 +154,8 @@ export default function BasicTabs() {
                         label="ID отдела"
                         variant="outlined"
                         fullWidth
+                        value={employeeData.unit_id}
+                        onChange={handleInputChange}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -116,6 +163,8 @@ export default function BasicTabs() {
                         label="Доступные дни отпуска"
                         variant="outlined"
                         fullWidth
+                        value={employeeData.available_vacation}
+                        onChange={handleInputChange}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -123,6 +172,8 @@ export default function BasicTabs() {
                         label="ID роли"
                         variant="outlined"
                         fullWidth
+                        value={employeeData.role_id}
+                        onChange={handleInputChange}
                     />
                     </Box>
                 </form>
@@ -130,6 +181,7 @@ export default function BasicTabs() {
                     variant="contained"
                     color="primary"
                     style={{ position: 'absolute', right: '40px' }}
+                    onClick={handleAddEmployee}
                 >
                     Добавить
                 </Button>

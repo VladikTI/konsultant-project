@@ -30,7 +30,7 @@ export default function Login() {
                 'Content-Type': 'application/json',
             }
         })
-            .then(response => navigate("/users"))
+            .then(response => navigate("/admin"))
             .catch(error => console.error(error));
     }
 
