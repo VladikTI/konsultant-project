@@ -18,6 +18,10 @@ fastify.register(authRoutes);
 fastify.register(employeeRoutes);
 
 
+fastify.options('/', async (request, reply)=>{
+    return reply.header('Allow', ['OPTIONS', 'GET', 'POST'])
+})
+
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 

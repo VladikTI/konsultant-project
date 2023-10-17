@@ -15,7 +15,7 @@ async function applicationManager(fastify, options){
     async function getApplications(client, search_data){
         try {
             const {rows} = await client.query(
-                'SELECT FROM '
+                'SELECT * FROM request WHERE employee_id = $1;', [search_data.employee_id]
             )
         } catch (err) {
             console.log('Get applications error: ', err);
