@@ -6,7 +6,12 @@ import {
     CircularProgress,
     ListItem, 
     ListItemButton, 
-    ListItemText 
+    ListItemText,
+    Card,
+    CardContent,
+    CardActions,
+    IconButton,
+    CloseButton
 } from "@mui/material";
 
 import { useTheme } from '@mui/material/styles';
@@ -71,7 +76,12 @@ export default function Apply() {
     
     useNavigate();
     const [loaded,      setLoaded]      = useState(false);
-    const [remoteData,  setRemoteData]  = useState({daysLeft: 300, myApplications: [{employee_id: 0, start_date: "today", amount_days: 0, status: 1}], applications: []});
+    const [remoteData,  setRemoteData]  = useState({daysLeft: 300, myApplications: [
+        {employee_id: 0, start_date: "2024-10-20", amount_days: 1, status: 1},
+        {employee_id: 0, start_date: "2024-01-20", amount_days: 1, status: 1},
+        {employee_id: 0, start_date: "2024-05-20", amount_days: 2, status: -1},
+        {employee_id: 0, start_date: "2024-01-25", amount_days: 3, status: 0},
+    ], applications: []});
     const [applyData,   setApplyData]   = useState({isApplying: false, selectedDay: 0, firstSelector: null, secondSelector: null});
 
     useEffect(() => {loadData(setLoaded, setRemoteData)});
@@ -167,7 +177,7 @@ function DisplayPanel({remoteData, applyData, setRemoteData, setApplyData}){
                             <FixedSizeList
                                 height={height}
                                 width={width}
-                                itemSize={46}
+                                itemSize={200}
                                 itemCount={remoteData.myApplications.length}
                                 overscanCount={5}
                             >
@@ -193,12 +203,40 @@ var renderRow = props => {
     const { index, style, remoteData } = props;
 
     var application = remoteData.myApplications[index];
+    //    {"Начало: " + application.start_date + " длительность: " + application.amount_days + " статус: " + application.status} />
     
+    var dateBegin = new Date(Date.parse(application.start_date));
+    var dateEnd = new Date(dateBegin);
+    dateEnd.setDate(dateEnd.getDate() + application.amount_days - 1);
+
+    if (application.amount_days % 10 == 1) var ending = " день";
+    else if (application.amount_days % 10 == 2) var ending = " дня";
+    else if (application.amount_days % 10 == 3) var ending = " дня";
+    else if (application.amount_days % 10 == 4) var ending = " дня";
+    else var ending = " дня";
+     
+    if (application.status == -1) var strStatus = "отказано";
+    else if (application.status == 0) var strStatus = "на рассмотрении";
+    else var strStatus = "одобрено";
+
     return (
-        <ListItem style={style} key={index} component="div" disablePadding>
-            <ListItemButton>
-                <ListItemText primary={"Начало: " + application.start_date + " длительность: " + application.amount_days + " статус: " + application.status} />
-            </ListItemButton>
+        <ListItem style={{...style, padding: "10px", paddingBottom: "5px"}} key={index} component="div">
+            <Card variant="outlined" sx={{width:"100%", height:"100%", display: "flex", flexDirection: "column"}}>
+                <CardContent>
+                    <Typography variant="body1" sx={{fontWeight:"400"}} gutterBottom>
+                        {dateBegin.toLocaleDateString('ru-RU')} - {dateEnd.toLocaleDateString('ru-RU')} 
+                    </Typography>
+                    <Typography variant="h5" sx={{fontWeight:"400"}} gutterBottom>
+                        {application.amount_days + ending} 
+                    </Typography>
+                    <Typography variant="h6" sx={{fontWeight:"400"}}>
+                        {"Статус: " + strStatus} 
+                    </Typography>
+                </CardContent>
+                <CardActions sx={{marginTop: "auto"}}>
+                    <Button size="medium">Убрать заявку</Button>
+                </CardActions>
+            </Card>
         </ListItem>
     );
 }
