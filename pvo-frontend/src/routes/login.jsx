@@ -1,8 +1,11 @@
 import {Alert, Box, Button, Container, TextField, ThemeProvider, Typography} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
+<<<<<<< HEAD
 import { createTheme } from '@mui/material/styles';
 import { instance } from "../api.config.js";
+=======
+>>>>>>> origin/dev-congerian
 
 export default function Login() {
     const navigate = useNavigate();
@@ -34,19 +37,7 @@ export default function Login() {
             .catch(error => console.error(error));
     }
 
-    const theme = createTheme({
-        palette: {
-            blue: {
-                main: '#00A3FF',
-                light: '#00A3FF',
-                dark: '#0077FF',
-                contrastText: '#000000',
-            },
-        },
-    });
-
     return (
-        <ThemeProvider theme={theme}>
         <Container maxWidth="xs" sx={{mt: 30}}>
             <Typography variant="h5" component="h1" gutterBottom textAlign="center">
                 Вход в аккаунт
@@ -75,6 +66,5 @@ export default function Login() {
                 <Button variant="contained" color="blue" type="submit" sx={{mt: 3}} fullWidth>Войти</Button>
             </Box>
         </Container>
-        </ThemeProvider>
     )
 }
