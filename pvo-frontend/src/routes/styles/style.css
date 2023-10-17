@@ -50,3 +50,67 @@
     justify-content: center;
 }
 
+/* Пример CSS для кнопок */
+.button {
+    display: inline-block;
+    background-color: #007BFF; /* Цвет фона кнопки */
+    color: #fff; /* Цвет текста на кнопке */
+    padding: 10px 20px; /* Отступы вокруг текста */
+    border: none; /* Уберите границу кнопки */
+    border-radius: 5px; /* Закругление углов */
+    cursor: pointer; /* Придайте кнопке стиль "руки" при наведении */
+    font-size: 16px; /* Размер шрифта */
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s; /* Анимация при наведении */
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+.button:hover {
+    background-color: #0056b3; /* Изменение цвета фона при наведении */
+    color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Пример CSS для кнопок разных цветов */
+.button-primary {
+    background-color: #007BFF;
+}
+
+.button-secondary {
+    background-color: #6C757D;
+}
+
+.button-tertiary {
+    background-color: #6C757D;
+    color: #fff;
+}
+
+.tab-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.tab-button {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.tab-button.active {
+    background-color: #0056b3;
+}
+
+.tab-content {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
