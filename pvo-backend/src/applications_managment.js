@@ -11,20 +11,36 @@ fastify.register(authRoutes);
 
 async function applicationsManager(fastify, options){
 
-    
-
     fastify.get('/api/get_applications', async(request, reply) =>{
         const client = await fastify.db.client;
         const req_data = request.body;
-        let output_rows = new Array();
-        try{
-            for (const req of req_data.applications){
+        let data_result = new Array();
+        try {
+            for (const req of req_data){
+                let output_rows = new Array();  
                 const rows = await getApplications(client, req.employee_id);
-                output_rows.push(rows);
+                for (line of rows){
+                    output_rows.push({
+                        "employee_id": line.employee_id,
+                        "start_date": DateTime.fromSQL(line.start_date).toISO({includeOffset: false}),
+                        "end_date": DateTime.fromSQL(line.end_date).toISO({includeOffset: false}),
+                        "days": line.days,
+                        "status": line.status,
+                        "created_date": DateTime.fromSQL(line.created_date).toISO({includeOffset: false}),
+                        "file_id": line.file_id
+                    });
+                };
+                const data = {
+                    "employee_id": req.employee_id,
+                    "applications": output_rows
+                }
+
+                data_result.push(data);
             }
-            return reply.code(200).send({
-                "applications": output_rows
-            });
+            const result = {
+                "data": data_result
+            }
+            return reply.code(200).send(result);
         } catch (err){
             console.log('Error in /api/get_applications: ', err);
             return reply.code(500).send('Internal Server Error: error on getting applications');
@@ -37,9 +53,9 @@ async function applicationsManager(fastify, options){
         try {
             const insert_data = {
                 employee_id : req_data.employee_id,
-                start_date: req_data.start_date,
-                end_date: req_data.end_date,
-                status: req_data.status,
+                start_date: DateTime.toSQLDate(req_data.start_date),
+                end_date: DateTime.toSQLDate(req_data.end_date),
+                status: "awaiting",
             };
             await createApplication(client, insert_data);
             return reply.code(200).send('Application was created successfully');
