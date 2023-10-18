@@ -60,8 +60,20 @@ async function applicationsManager(fastify, options){
             await createApplication(client, insert_data);
             return reply.code(200).send('Application was created successfully');
         } catch (err) {
-            console.error("Error in POST /api/create_application", err);
+            console.error("Error in POST /api/create_application: ", err);
             return reply.code(400).send('Bad Request: application creation failed');
+        }
+    })
+
+    fastify.post('/api/delete_application', async(request, reply)=>{
+        const client = await fastify.db.client;
+        const req_data = request.body;
+        try {
+            await deleteApplication(client, req_data.request_id);
+            return reply.code(200).send('Application was deleted successfully');
+        } catch(err) {
+            console.error("Error in POST /api/delete_application: ", err);
+            return reply.code(400).send('Bad Request: deletion of the application failed');
         }
     })
 
@@ -91,6 +103,17 @@ async function applicationsManager(fastify, options){
         }
     }
 
+    async function deleteApplication(client, request_id){
+        try {
+            const {rows} = await client.query(
+                'DELETE FROM request WHERE request_id = $1;', [request_id]
+            );
+            return;
+        } catch (err) {
+            console.log('Delete Application Error: ', err);
+            throw new Error(err);
+        }
+    }
 
 }
 

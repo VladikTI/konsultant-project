@@ -220,7 +220,7 @@
         Content-Type: 'application/json'
     }
     body: {
-        "application_id": "APPLICATION_ID"
+        "request_id": "request_id"
     }
 }
 ```
