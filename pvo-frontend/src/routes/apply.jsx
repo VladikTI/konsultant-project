@@ -11,11 +11,14 @@ import {
     CardContent,
     CardActions,
     IconButton,
-    CloseButton
+    CloseButton,
+    TextField
 } from "@mui/material";
 
 import { useTheme } from '@mui/material/styles';
-
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateField } from '@mui/x-date-pickers';
 import { useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -77,10 +80,11 @@ export default function Apply() {
     useNavigate();
     const [loaded,      setLoaded]      = useState(false);
     const [remoteData,  setRemoteData]  = useState({daysLeft: 300, myApplications: [
-        {employee_id: 0, start_date: "2024-10-20", amount_days: 1, status: 1},
-        {employee_id: 0, start_date: "2024-01-20", amount_days: 1, status: 1},
-        {employee_id: 0, start_date: "2024-05-20", amount_days: 2, status: -1},
-        {employee_id: 0, start_date: "2024-01-25", amount_days: 3, status: 0},
+        {employee_id: 0, start_date: "2024-10-20", amount_days: 15, status: 1},
+        {employee_id: 0, start_date: "2024-01-20", amount_days: 14, status: 1},
+        {employee_id: 0, start_date: "2024-05-20", amount_days: 20, status: -1},
+        {employee_id: 0, start_date: "2024-01-25", amount_days: 10, status: 0},
+        {employee_id: 0, start_date: "2024-02-25", amount_days: 10, status: 0}
     ], applications: []});
     const [applyData,   setApplyData]   = useState({isApplying: false, selectedDay: 0, firstSelector: null, secondSelector: null});
 
@@ -116,13 +120,22 @@ function Panel({remoteData, applyData, setRemoteData, setApplyData}){
     return (
         <Box sx={{height: "100%", width: "380px", display: "flex", flexDirection: "column"}}>
             <Box>
-                <Typography variant="h5" fontWeight="600" gutterBottom color={theme.palette.blue.dark} sx={{paddingLeft: "10px", margin: "10px"}}>
-                    Мои заявки
-                </Typography>
+                { 
+                    !applyData.isApplying &&
+                    <Typography variant="h5" fontWeight="600" gutterBottom color={theme.palette.blue.dark} sx={{paddingLeft: "10px", margin: "10px"}}>
+                        Мои заявки
+                    </Typography> 
+                }
+                {
+                    applyData.isApplying &&
+                    <Typography variant="h5" fontWeight="600" gutterBottom color={theme.palette.blue.dark} sx={{paddingLeft: "10px", margin: "10px"}}>
+                    Подача заявки
+                    </Typography>
+                }
             </Box>
             <HorizontalDivider/>
             <Box>
-                <Typography variant="body1" fontWeight="600" gutterBottom color={theme.palette.blue.contrastText} sx={{paddingLeft: "10px", margin: "10px"}}>
+                <Typography variant="body1" fontWeight="600" gutterBottom sx={{paddingLeft: "10px", margin: "10px"}}>
                     Доступные отпускные: {remoteData.daysLeft}
                 </Typography>
             </Box>
@@ -161,7 +174,7 @@ function DisplayPanel({remoteData, applyData, setRemoteData, setApplyData}){
                     </Typography>
                 </Box>
                 <Container sx={{display: "flex", justifyContent: "center", alignItems: "center", width: "300px", height:"80px"}}>
-                    <Button variant="contained" size="large" onClick={onApplyButtonClick}>Подать новую заявку</Button>
+                    <Button variant="contained" size="large" onClick={onApplyButtonClick} color="blue">Подать новую заявку</Button>
                 </Container>
                 <Box sx={{flex: "2"}}/>
             </Box>
@@ -177,7 +190,7 @@ function DisplayPanel({remoteData, applyData, setRemoteData, setApplyData}){
                             <FixedSizeList
                                 height={height}
                                 width={width}
-                                itemSize={200}
+                                itemSize={180}
                                 itemCount={remoteData.myApplications.length}
                                 overscanCount={5}
                             >
@@ -191,7 +204,7 @@ function DisplayPanel({remoteData, applyData, setRemoteData, setApplyData}){
                 <HorizontalDivider/>
                 
                 <Container sx={{display: "flex", justifyContent: "center", alignItems: "center", width: "300px", height:"80px"}}>
-                    <Button variant="contained" size="large" onClick={onApplyButtonClick}>Подать новую заявку</Button>
+                    <Button variant="contained" size="large" onClick={onApplyButtonClick} color='blue'>Подать новую заявку</Button>
                 </Container>
 
             </Box>
@@ -222,7 +235,7 @@ var renderRow = props => {
     return (
         <ListItem style={{...style, padding: "10px", paddingBottom: "5px"}} key={index} component="div">
             <Card variant="outlined" sx={{width:"100%", height:"100%", display: "flex", flexDirection: "column"}}>
-                <CardContent>
+                <CardContent sx={{margin: "5px", padding: "5px", paddingLeft: "10px"}}>
                     <Typography variant="body1" sx={{fontWeight:"400"}} gutterBottom>
                         {dateBegin.toLocaleDateString('ru-RU')} - {dateEnd.toLocaleDateString('ru-RU')} 
                     </Typography>
@@ -233,8 +246,8 @@ var renderRow = props => {
                         {"Статус: " + strStatus} 
                     </Typography>
                 </CardContent>
-                <CardActions sx={{marginTop: "auto"}}>
-                    <Button size="medium">Убрать заявку</Button>
+                <CardActions sx={{marginTop: "auto", padding: "0px", paddingLeft: "10px", paddingBottom: "5px"}}>
+                    <Button size="medium" color="red" sx={{padding:"5px"}}>Убрать заявку</Button>
                 </CardActions>
             </Card>
         </ListItem>
@@ -256,16 +269,51 @@ function ApplyingPanel({remoteData, applyData, setRemoteData, setApplyData}){
     return (
         <Box sx={{width: "100%", height: "100%", display: "flex", flexDirection: "column"}}>
             
-            <Box sx={{flex: "1", textAlign: "center"}}>
-                <Typography variant="h6" fontWeight="500" gutterBottom color={theme.palette.blue.dark}>
-                    ПОДАЁМ НОВУЮ ЗАЯВКУ
+            <Box sx={{flex: "1", textAlign: "left"}}>
+                <Typography variant="h6" fontWeight="500" color={theme.palette.blue.dark} sx={{margin: "5px", marginLeft: "10px", marginTop: "5px", paddingLeft: "10px"}}>
+                    Даты:
                 </Typography>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateField  
+                        sx = {{width: "340px", margin: "10px", marginLeft: "20px"}} 
+                        slotProps={{ textField: { size: 'medium' } }} 
+                        label = "Начало отпуска"
+                        focused = "true"
+                        format = "DD.MM.YYYY" 
+                        color = "blue" />
+                    <DateField  
+                        sx = {{width: "340px", margin: "10px", marginLeft: "20px", marginBottom: "20px"}} 
+                        slotProps={{ textField: { size: 'medium' } }} 
+                        label = "Конец отпуска"
+                        focused = "true"
+                        format = "DD.MM.YYYY" 
+                        color = "blue" />
+                </LocalizationProvider>
+                <HorizontalDivider/>
+                <Typography variant="h6" fontWeight="500" color={theme.palette.blue.dark} sx={{margin: "5px", marginLeft: "10px", paddingLeft: "10px"}}>
+                    Комментарий к заявке:
+                </Typography>
+                <Container disableGutters sx={{padding: "10px", paddingLeft: "20px", paddingRight: "20px"}}>
+                    <TextField
+                        id="outlined-multiline-static"
+                        color="blue"
+                        placeholder="Введите комментарий"
+                        focused
+                        multiline
+                        fullWidth
+                        rows={8}
+                        maxRows={16}
+                        InputProps={{style: {fontSize: 14, padding: "8px"}}}
+                    />
+                </Container>
             </Box>
 
             <HorizontalDivider/>
             
-            <Container sx={{display: "flex", justifyContent: "center", alignItems: "center", width: "300px", height:"80px"}}>
-                <Button variant="contained" size="large" onClick={onCancelApplyButtonClick}>Назад</Button>
+            <Container sx={{display: "flex", justifyContent: "center", alignItems: "center", width: "380px", height:"80px"}}>
+                <Button variant="contained" size="large" onClick={onCancelApplyButtonClick} color={"red"} sx = {{width: "154px"}}>Назад</Button>
+                <Box sx = {{width: "24px"}}></Box>
+                <Button variant="contained" size="large" color={"green"} sx = {{width: "154px"}}>Отправить</Button>
             </Container>
 
         </Box>
