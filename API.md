@@ -220,13 +220,13 @@
         Content-Type: 'application/json'
     }
     body: {
-        "application_id": "APPLICATION_ID"
+        "request_id": "request_id"
     }
 }
 ```
 | Поле | Описание | Тип данных |
 |------|----------|------------|
-| _application_id_ | ID заявки | **int** |
+| _request_id_ | ID заявки | **int** |
 
 ## 5. API руководителя
 
