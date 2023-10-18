@@ -6,15 +6,10 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.12",
-<<<<<<< HEAD
     "axios": "^1.5.1",
     "mobx": "^6.10.2",
     "mobx-react-lite": "^4.0.5",
     "prop-types": "^15.8.1",
-=======
-    "@mui/x-date-pickers": "^6.16.2",
-    "dayjs": "^1.11.10",
->>>>>>> origin/dev-congerian
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.16.0",
