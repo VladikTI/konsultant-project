@@ -123,7 +123,7 @@ async function employeeRoutes (fastify, options){
             );
             return;
         } catch (err) {
-            console.error("UpdateEmployeeError: ", err);
+            console.error("Update Employee Error: ", err);
             throw new Error(err);
         }
     }
@@ -139,7 +139,7 @@ async function employeeRoutes (fastify, options){
           // Note: avoid doing expensive computation here, this will block releasing the client
             return rows[0].employee_id;
         } catch (err) {
-            console.error("InsertEmployeeError: ", err);
+            console.error("Insert Employee Error: ", err);
             throw new Error(err);
         }
     }
@@ -154,7 +154,7 @@ async function employeeRoutes (fastify, options){
           // Note: avoid doing expensive computation here, this will block releasing the client
             return;
         }  catch (err) {
-            console.error("InsertEmployeeRoleError: ", err);
+            console.error("Insert EmployeeRole Error: ", err);
             throw new Error(err);
         }
     }
@@ -168,7 +168,7 @@ async function employeeRoutes (fastify, options){
           // Note: avoid doing expensive computation here, this will block releasing the client
             return;
         }  catch (err) {
-            console.error("InsertEmployeeUnitError: ", err);
+            console.error("Insert EmployeeUnit Error: ", err);
             throw new Error(err);
         }
     }

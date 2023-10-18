@@ -1,11 +1,9 @@
 import {Alert, Box, Button, Container, TextField, ThemeProvider, Typography} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
-<<<<<<< HEAD
 import { createTheme } from '@mui/material/styles';
 import { instance } from "../api.config.js";
-=======
->>>>>>> origin/dev-congerian
+
 
 export default function Login() {
     const navigate = useNavigate();

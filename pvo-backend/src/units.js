@@ -46,6 +46,18 @@ async function unitRoutes(fastify, options){
 
     });
 
+    fastify.post('/api/delete_unit', async(request, reply)=>{
+        const client = await fastify.db.client;
+        const req_data = request.body;
+        try {
+            await deleteUnit(client, req_data.unit_id);
+            return reply.code(200).send('Unit was deleted successfully');
+        } catch(err) {
+            console.error("Error in POST /api/delete_unit: ", err);
+            return reply.code(400).send('Bad Request: deletion of the unit failed');
+        }
+    })
+
     fastify.post('/api/update_employee/', async(request, reply)=>{
         
         const client = fastify.db.client;
@@ -97,6 +109,19 @@ async function unitRoutes(fastify, options){
             return;
         } catch (err) {
             console.error("UpdateUnitError: ", err);
+            throw new Error(err);
+        }
+    }
+
+    
+    async function deleteUnit(client, unit_id){
+        try {
+            const {rows} = await client.query(
+                'DELETE FROM unit WHERE unit_id = $1;', [unit_id]
+            );
+            return;
+        } catch (err) {
+            console.log('Delete Unit Error: ', err);
             throw new Error(err);
         }
     }

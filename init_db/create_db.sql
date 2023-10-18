@@ -16,7 +16,7 @@ patronymic varchar(50), position varchar(50),
 username varchar(50), password varchar(255),
 available_vacation integer, updated_date timestamp,
 updated_by integer, 
-foreign key (updated_by) references employee (employee_id)
+foreign key (updated_by) references employee (employee_id) on delete set null on update cascade
 );
 
 create index idx_employee_username on employee (username);
@@ -25,7 +25,7 @@ create index idx_employee_surname on employee (surname);
 create table role
 (role_id serial primary key, name varchar(100),
 updated_date timestamp, updated_by integer, 
-foreign key (updated_by) references employee (employee_id)
+foreign key (updated_by) references employee (employee_id) on delete set null on update cascade
 );
 
 create index idx_role_name on role (name);
@@ -33,9 +33,9 @@ create index idx_role_name on role (name);
 create table employee_role
 (employee_id integer, role_id integer,
 updated_date timestamp, updated_by integer, 
-foreign key (employee_id) references employee (employee_id),
-foreign key (role_id) references role (role_id),
-foreign key (updated_by) references employee (employee_id)
+foreign key (employee_id) references employee (employee_id) on delete cascade on update cascade,
+foreign key (role_id) references role (role_id) on delete cascade on update cascade,
+foreign key (updated_by) references employee (employee_id) on delete set null on update cascade
 );
 
 create index idx_employee_role_employee_id on employee_role (employee_id);
@@ -44,7 +44,7 @@ create index idx_employee_role_role_id on employee_role (role_id);
 create table unit
 (unit_id serial primary key, name varchar(100),
 updated_date timestamp, updated_by integer, 
-foreign key (updated_by) references employee (employee_id)
+foreign key (updated_by) references employee (employee_id) on delete set null on update cascade
 );
 
 create index idx_unit_name on unit (name);
@@ -52,9 +52,9 @@ create index idx_unit_name on unit (name);
 create table employee_unit
 (employee_id integer, unit_id integer,
 updated_date timestamp, updated_by integer, 
-foreign key (employee_id) references employee (employee_id),
-foreign key (unit_id) references unit (unit_id),
-foreign key (updated_by) references employee (employee_id)
+foreign key (employee_id) references employee (employee_id) on delete cascade on update cascade,
+foreign key (unit_id) references unit (unit_id) on delete cascade on update cascade,
+foreign key (updated_by) references employee (employee_id) on delete set null on update cascade
 );
 
 create index idx_employee_unit_employee_id on employee_unit (employee_id);
@@ -64,7 +64,7 @@ create table file
 (file_id serial primary key, file_name varchar(100),
 file_type varchar(50), file_path varchar,
 updated_date timestamp, updated_by integer, 
-foreign key (updated_by) references employee (employee_id)
+foreign key (updated_by) references employee (employee_id) on delete set null on update cascade
 );
 
 create index idx_file_file_name on file (file_name);
@@ -76,9 +76,9 @@ start_date date, end_date date,
 days integer, status varchar(50),
 created_date timestamp, file_id integer,
 updated_date timestamp, updated_by integer,
-foreign key (employee_id) references employee (employee_id),
-foreign key (file_id) references file (file_id),
-foreign key (updated_by) references employee (employee_id)
+foreign key (employee_id) references employee (employee_id) on delete cascade on update cascade,
+foreign key (file_id) references file (file_id) on delete set null on update cascade,
+foreign key (updated_by) references employee (employee_id) on delete set null on update cascade
 );
 
 create index idx_request_employee_id on request (employee_id);
@@ -92,7 +92,7 @@ create table rule
 options text, expiration_date timestamp,
 status varchar(50), updated_date timestamp,
 updated_by integer, 
-foreign key (updated_by) references employee (employee_id)
+foreign key (updated_by) references employee (employee_id) on delete set null on update cascade
 );
 
 create index idx_rule_expiration_date on rule (expiration_date);

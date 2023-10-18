@@ -21,17 +21,13 @@ const router = createBrowserRouter([
         element: <Login/>,
     },
     {
-<<<<<<< HEAD
         path: "/admin",
         element: <Admin/>,
     },
     {
         path: "/editing",
         element: <Editing/>,
-=======
-        path: "/apply",
-        element: <Apply/>,
->>>>>>> origin/dev-congerian
+
     },
 ]);
 
