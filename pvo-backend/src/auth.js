@@ -15,6 +15,17 @@ async function authRoutes (fastify, options){
     fastify.register(fastifyJwt, {
         secret: 'abcdef',
     });
+
+    
+    fastify.options('/auth', (request, reply) => {
+        reply.header('Access-Control-Allow-Origin', 'http://localhost'); // Replace with your specific origin
+        reply.header('Access-Control-Allow-Methods', 'OPTIONS, POST, GET');
+        reply.header('Access-Control-Allow-Headers', 'authorization, content-type');
+      
+        // Reply with a 204 No Content status code, indicating that the request is allowed
+        reply.status(204).send();
+    });
+
     // Register route for user registration and JWT generation
     fastify.post('/auth', async (request, reply) => {
         const client = fastify.db.client;

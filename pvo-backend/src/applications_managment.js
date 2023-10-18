@@ -9,19 +9,73 @@ const fastify = Fastify({
 
 fastify.register(authRoutes);
 
-async function applicationManager(fastify, options){
+async function applicationsManager(fastify, options){
 
-    const client = await fastify.db.client;
-    async function getApplications(client, search_data){
+    
+
+    fastify.get('/api/get_applications', async(request, reply) =>{
+        const client = await fastify.db.client;
+        const req_data = request.body;
+        let output_rows = new Array();
+        try{
+            for (const req of req_data.applications){
+                const rows = await getApplications(client, req.employee_id);
+                output_rows.push(rows);
+            }
+            return reply.code(200).send({
+                "applications": output_rows
+            });
+        } catch (err){
+            console.log('Error in /api/get_applications: ', err);
+            return reply.code(500).send('Internal Server Error: error on getting applications');
+        }
+    })
+
+    fastify.post('/api/create_application', async(request, reply)=>{
+        const client = await fastify.db.client;
+        const req_data = request.body;
+        try {
+            const insert_data = {
+                employee_id : req_data.employee_id,
+                start_date: req_data.start_date,
+                end_date: req_data.end_date,
+                status: req_data.status,
+            };
+            await createApplication(client, insert_data);
+            return reply.code(200).send('Application was created successfully');
+        } catch (err) {
+            console.error("Error in POST /api/create_application", err);
+            return reply.code(400).send('Bad Request: application creation failed');
+        }
+    })
+
+    async function getApplications(client, employee_id){
         try {
             const {rows} = await client.query(
-                'SELECT * FROM request WHERE employee_id = $1;', [search_data.employee_id]
+                'SELECT request_id, employee_id, start_date, end_date, days, status, created_date, file_id FROM request WHERE employee_id = $1;', [employee_id]
             )
+            return rows;
         } catch (err) {
             console.log('Get applications error: ', err);
             throw new Error(err);
         }
     };
+
+    async function createApplication(client, insert_data){
+        try {
+            const {rows} = await client.query(
+                'INSERT INTO request (employee_id, start_date, end_date, days, status, created_date, updated_date, updated_by) VALUES ($1, $2, $3, $4, $5, NOW(), NOW(), $6);', 
+                [insert_data.employee_id, insert_data.start_date, insert_data.end_date, insert_data.days,
+                 insert_data.status, insert_data.employee_id]
+            );
+            return;
+        } catch (err) {
+            console.log('Create Application Error: ', err);
+            throw new Error(err);
+        }
+    }
+
+
 }
 
-export default applicationManager;
+export default applicationsManager;

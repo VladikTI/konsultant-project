@@ -25,8 +25,7 @@ async function employeeRoutes (fastify, options){
             password: {type: 'string'},
             unit_id: {type: 'int'},
             available_vacation: {type: 'int'},
-            role_id: {type: 'int'}, 
-            token: {type: 'string'}
+            role_id: {type: 'int'}
         }
     }
 
@@ -35,7 +34,7 @@ async function employeeRoutes (fastify, options){
         const client = await fastify.db.client;
         
         // TODO: Add check for rights
-        const token_row = await findTokenInDatabase(client, request.headers.authorization.replace('Bearer ', ''), 'token');
+        // const token_row = await findTokenInDatabase(client, request.headers.authorization.replace('Bearer ', ''), 'token');
         // if (!token_row){
         //     return reply.redirect(401, '/api/refresh');
         // }
@@ -46,7 +45,7 @@ async function employeeRoutes (fastify, options){
         const hashedPassword = await bcrypt.hashSync(req_data.password, salt);
 
         // const token_row = await findTokenInDatabase(client, req_data.token, 'token');
-        const user_id = token_row.employee_id;
+        const user_id = null;
 
         try {
             const insert_data = {
