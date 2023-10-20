@@ -22,7 +22,7 @@ async function authRoutes (fastify, options){
         reply.header('Access-Control-Allow-Headers', 'authorization, content-type');
       
         // Reply with a 204 No Content status code, indicating that the request is allowed
-        reply.status(204).send();
+        reply.status(200).send();
     });
 
     // Register route for user registration and JWT generation
@@ -54,8 +54,6 @@ async function authRoutes (fastify, options){
                         console.log(err);
                         return reply.status(500).send({error: 'Database error'});
                     }
-
-                    console.log("someth");
                     
                     return reply.code(201).send({"token": newAccessToken.token, "refresh_token": newAccessToken.refresh_token,
                         "token_expire_date": DateTime.local(newAccessToken.token_expire_date).toString(), 

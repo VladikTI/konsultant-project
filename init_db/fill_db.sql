@@ -12,4 +12,4 @@ INSERT INTO role (
     name,
     updated_date,
     updated_by
-) VALUES ('Unit 1', NOW(), 1), ('Unit 2', NOW(), 1);
+) VALUES ('Employer', NOW(), 1), ('Employee', NOW(), 1);

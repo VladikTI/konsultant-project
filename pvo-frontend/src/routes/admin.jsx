@@ -44,15 +44,15 @@ export default function BasicTabs() {
     const [value, setValue] = React.useState(0);
     const token = localStorage.getItem('token');
     const [employeeData, setEmployeeData] = React.useState({
-        name: '',
-        surname: '',
-        patronymic: '',
-        position: '',
-        username: '',
-        password: '',
-        unit_id: '',
-        available_vacation: '',
-        role_id: '',
+        name: null,
+        surname: null,
+        patronymic: null,
+        position: null,
+        username: null,
+        password: null,
+        unit_id: null,
+        available_vacation: null,
+        role_id: null,
     });
 
     const handleChange = (event, newValue) => {

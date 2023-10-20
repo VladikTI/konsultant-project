@@ -14,22 +14,22 @@ fastify.register(authRoutes);
 
 async function employeeRoutes (fastify, options){
 
-    const employeeBodyJsonSchema = {
-        type: 'object',
-        properties: {
-            name: {type: 'string'},
-            surname: {type: 'string'},
-            patronymic: {type: 'string'},
-            position: {type: 'string'},
-            username: {type: 'string'},
-            password: {type: 'string'},
-            unit_id: {type: 'int'},
-            available_vacation: {type: 'int'},
-            role_id: {type: 'int'}
-        }
-    }
+    // const employeeBodyJsonSchema = {
+    //     type: 'object',
+    //     properties: {
+    //         name: {type: 'string'},
+    //         surname: {type: 'string'},
+    //         patronymic: {type: 'string'},
+    //         position: {type: 'string'},
+    //         username: {type: 'string'},
+    //         password: {type: 'string'},
+    //         unit_id: {type: 'int'},
+    //         available_vacation: {type: 'int'},
+    //         role_id: {type: 'int'}
+    //     }
+    // }
 
-    fastify.post('/api/add_employee/', employeeBodyJsonSchema, async(request, reply) => {
+    fastify.post('/api/add_employee', async(request, reply) => {
 
         const client = await fastify.db.client;
         
@@ -39,6 +39,7 @@ async function employeeRoutes (fastify, options){
         //     return reply.redirect(401, '/api/refresh');
         // }
 
+        console.log('entered');
         const req_data = request.body;
         
         const salt = await bcrypt.genSaltSync(10);
