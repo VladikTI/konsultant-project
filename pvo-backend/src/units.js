@@ -23,11 +23,12 @@ async function unitRoutes(fastify, options){
             console.log(`Error in get_unit route: ${err}`);
             return reply.code(500).send("Internal Server Error: error on getting unit");
         }
-
+        // console.log(units_rows[0].name);
         const result = {};
         for (let i = 0; i < units_rows.length; i++){
-            result.units_rows.name = units_rows.unit_id;
+            result[units_rows[i].name] = units_rows[i].unit_id;
         }
+        // console.log(result);
         return reply.code(200).send(JSON.stringify(result));
     })
 

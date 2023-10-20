@@ -73,10 +73,10 @@ async function authRoutes (fastify, options){
     });
       
     fastify.post('/api/refresh/', async (request, reply) => {
-
+        const client = fastify.db.client;
         // Проверьте, есть ли Refresh Token в вашей базе данных
         const refreshTokenString = request.headers.authorization.replace('Bearer ', '');
-        const storedAuthTokens = await findTokenInDatabase(refreshTokenString, 'refresh_token');
+        const storedAuthTokens = await findTokenInDatabase(client, refreshTokenString, 'refresh_token');
         
         // const employee_id = await findUserId(client, refreshTokenString, "refresh_token");
 
