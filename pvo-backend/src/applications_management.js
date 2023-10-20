@@ -80,7 +80,7 @@ async function applicationsManager(fastify, options){
     })
 
 
-    fastify.post('/api/application_managment', async(request, reply)=>{
+    fastify.post('/api/application_management', async(request, reply)=>{
         const client = await fastify.db.client;
         const req_data = request.body;
         const user_id = 1; //TODO: Добавить проверку

@@ -1,6 +1,6 @@
 import Fastify from 'fastify';
 import bcrypt from 'bcrypt';
-import fastifyJwt from 'fastify-jwt';
+import fastifyJwt from '@fastify/jwt';
 import { DateTime } from 'luxon';
 import dbconnector from './db.js';
 
