@@ -2,12 +2,14 @@ import Fastify from 'fastify';
 
 import dbconnector from './db.js';
 import authRoutes from './auth.js';
-import multipart from '@fastify/multipart'
 
-import fs from 'node:fs';
-// import uitl from 'node:util';
-// import {pipeline} from 'node:stream';
-// const pump = util.promisify(pipeline);
+import multipart from '@fastify/multipart'
+import fs from 'fs'
+import util from 'util'
+import { pipeline } from 'stream'
+
+const pump = util.promisify(pipeline);
+
 
 const fastify = Fastify({
     logger: true
@@ -19,28 +21,24 @@ fastify.register(authRoutes);
 
 fastify.register(multipart);
 
-fastify.post('/api/upload_document', async (request, reply)=>{
+async function fileManager(fastify, options){
 
-    if (!request.isMultipart()) {
-        return reply.code(400).send('Ошибка: Ожидался файл');;
-      }
-    
-      // Обработка загруженного файла
-      request.multipart((field, file, filename, encoding, mimetype) => {
-        if (mimetype !== 'application/pdf') {
-          return reply.code(400).send('Ошибка: Загруженный файл не является PDF');;
+    fastify.post('/api/upload_document', async (request, reply)=>{
+
+        if (!request.isMultipart()) {
+            return reply.code(400).send('File Upload Error: file was expected.');;
         }
-    
-        // Вы можете сохранить файл на сервере
-        const savePath = `./uploads/${filename}`;
-        file.pipe(fs.createWriteStream(savePath));
-    
-        // Дополнительная обработка, если необходимо
-    
-        // Отправьте ответ клиенту
-        reply.send('Файл успешно загружен');
-      });
-    
-      await request.done();
-    
-})
+        const upload_file = await req.file();
+        
+        try {
+            await pump(upload_file.file, fs.createWriteStream(`./employee_applications/${upload_file.filename}`));
+            return reply.code(200).send('File uploaded successfully');
+        } catch (err) {
+            console.log("File Upload Error: ", err);
+            return reply.code(500).send('Internal Server Error: file upload error');
+        }
+    })
+
+}
+
+export default fileManager;
