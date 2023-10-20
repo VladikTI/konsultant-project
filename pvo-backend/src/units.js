@@ -13,21 +13,34 @@ fastify.register(authRoutes);
 
 async function unitRoutes(fastify, options){
 
-    const unitBodyJsonSchema = {
-        type: 'object',
-        properties: {
-            name: {type: 'string'},
+    fastify.get('/api/get_units', async(request, reply) => {
+        const client = await fastify.db.client;
+        let units_rows;
+        try {
+            const {rows} = await client.query('SELECT name, unit_id FROM unit');
+            units_rows = rows;
+        } catch (err) {
+            console.log(`Error in get_unit route: ${err}`);
+            return reply.code(500).send("Internal Server Error: error on getting unit");
         }
-    }
 
-    fastify.get('/api/add_unit', async(request, reply) => {
+        const result = {};
+        for (let i = 0; i < units_rows.length; i++){
+            result.units_rows.name = units_rows.unit_id;
+        }
+        return reply.code(200).send(JSON.stringify(result));
+    })
+
+    fastify.post('/api/add_unit', async(request, reply) => {
         const client = await fastify.db.client;
 
-        // TODO: Add check for rights
-        const token_row = await findTokenInDatabase(client, request.headers.authorization.replace('Bearer ', ''), 'token');
-        if (!token_row){
-            return reply.redirect(401, '/api/refresh');
-        }
+        // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
+        // if (!token_row){
+        //     return reply.redirect(401, '/api/refresh');
+        // }
+        // if (!employee_role){
+        //     return reply.code(403).send('Access denied');
+        // }
 
         const user_id = token_row.employee_id;
 
@@ -49,6 +62,15 @@ async function unitRoutes(fastify, options){
     });
 
     fastify.post('/api/delete_unit', async(request, reply)=>{
+
+        // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
+        // if (!token_row){
+        //     return reply.redirect(401, '/api/refresh');
+        // }
+        // if (!employee_role){
+        //     return reply.code(403).send('Access denied');
+        // }
+
         const client = await fastify.db.client;
         const req_data = request.body;
         try {
@@ -60,15 +82,17 @@ async function unitRoutes(fastify, options){
         }
     })
 
-    fastify.post('/api/update_employee/', async(request, reply)=>{
+    fastify.post('/api/update_unit/', async(request, reply)=>{
         
         const client = fastify.db.client;
 
-        // TODO: Add check for rights
-        const token_row = await findTokenInDatabase(client, request.headers.authorization.replace('Bearer ', ''), 'token');
-        if (!token_row){
-            return reply.redirect(401, '/api/refresh');
-        }
+        // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
+        // if (!token_row){
+        //     return reply.redirect(401, '/api/refresh');
+        // }
+        // if (!employee_role){
+        //     return reply.code(403).send('Access denied');
+        // }
 
         const req_data = request.body;
         const user_id = token_row.employee_id;

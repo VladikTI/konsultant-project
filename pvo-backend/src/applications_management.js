@@ -81,6 +81,15 @@ async function applicationsManager(fastify, options){
 
 
     fastify.post('/api/application_management', async(request, reply)=>{
+
+        // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
+        // if (!token_row){
+        //     return reply.redirect(401, '/api/refresh');
+        // }
+        // if (!employee_role){
+        //     return reply.code(403).send('Access denied');
+        // }
+
         const client = await fastify.db.client;
         const req_data = request.body;
         const user_id = 1; //TODO: Добавить проверку

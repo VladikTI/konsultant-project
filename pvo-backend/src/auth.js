@@ -103,7 +103,7 @@ async function authRoutes (fastify, options){
     async function findTokenInDatabase(client, token, token_name) {
         try {
             const {rows} = await client.query(
-                `SELECT * FROM authentication WHERE ${token_name}=$1;`,
+                `SELECT * FROM authentication WHERE ${token_name}=$1 ORDER BY updated_date;`,
                 [token]
             );
             return rows[0];
@@ -145,6 +145,24 @@ async function authRoutes (fastify, options){
             console.error('Error generating JWT: ', err);
             throw new Error(`Failed to create access token`);
         }
+    }
+
+    async function determineAccess(client, token, token_name, role_name){
+        const token_row = await findTokenInDatabase(client, token, token_name);
+
+        if (!token_row){
+            return reply.redirect(401, '/api/refresh');
+        }
+        
+        try {
+            const employee_role = await client.query('SELECT * FROM employee_role JOIN role ON employee_role.role_id = role.role_id WHERE employee_id = $1 AND name = $2;',
+            [token_row.employee_id, role_name] );
+            return [token_row, employee_role];
+        } catch (err) {
+            console.error('Error determining access', err);
+            return [token_row, null];
+        }
+        
     }
 
 };
