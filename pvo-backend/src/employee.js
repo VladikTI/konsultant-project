@@ -73,7 +73,7 @@ async function employeeRoutes (fastify, options){
 
     });
 
-    fastify.post('/api/update_employee/', async(request, reply)=>{
+    fastify.post('/api/update_employee', async(request, reply)=>{
         
         const client = fastify.db.client;
 
@@ -107,13 +107,26 @@ async function employeeRoutes (fastify, options){
         
     });
 
-    // fastify.post('/api/register_admin/', async(request, reply) =>{
+    fastify.post('/api/delete_employee', async(request, reply)=>{
 
-    //     const client = fastify.db.client;
+        // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
+        // if (!token_row){
+        //     return reply.redirect(401, '/api/refresh');
+        // }
+        // if (!employee_role){
+        //     return reply.code(403).send('Access denied');
+        // }
 
-        
-    // })
-
+        const client = await fastify.db.client;
+        const req_data = request.body;
+        try {
+            await deleteEmployee(client, req_data.employee_id);
+            return reply.code(200).send('Employee was deleted successfully');
+        } catch(err) {
+            console.error("Error in POST /api/delete_unit: ", err);
+            return reply.code(400).send('Bad Request: deletion of the employee failed');
+        }
+    })
 
     async function updateEmployee(client, insert_data){
         try {
@@ -174,7 +187,17 @@ async function employeeRoutes (fastify, options){
         }
     }
 
-
+    async function deleteEmployee(client, employee_id){
+        try {
+            const {rows} = await client.query(
+                'DELETE FROM employee WHERE employee_id = $1;', [employee_id]
+            );
+            return;
+        } catch (err) {
+            console.log('Delete Employee Error: ', err);
+            throw new Error(err);
+        }
+    }
 
 }
 

@@ -43,7 +43,7 @@ async function unitRoutes(fastify, options){
         //     return reply.code(403).send('Access denied');
         // }
 
-        const user_id = token_row.employee_id;
+        const user_id = 1;
 
         const req_data = request.body;
 
@@ -96,7 +96,7 @@ async function unitRoutes(fastify, options){
         // }
 
         const req_data = request.body;
-        const user_id = token_row.employee_id;
+        const user_id = 1;
 
         try {
             const insert_data = {
