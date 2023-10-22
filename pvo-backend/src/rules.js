@@ -11,28 +11,21 @@ fastify.register(dbconnector);
 
 fastify.register(authRoutes);
 
-async function unitRoutes(fastify, options){
+async function rulesRoutes(fastify, options){
 
-    fastify.get('/api/get_units', async(request, reply) => {
+    fastify.get('/api/get_rules', async(request, reply) => {
         const client = await fastify.db.client;
-        let units_rows;
         try {
-            const {rows} = await client.query('SELECT name, unit_id FROM unit');
-            units_rows = rows;
+            const {rows} = await client.query('SELECT * FROM rules');
+            return reply.code(200).send(JSON.stringify(rows));
         } catch (err) {
-            console.log(`Error in get_unit route: ${err}`);
-            return reply.code(500).send("Internal Server Error: error on getting unit");
+            console.log(`Error in get_rules route: ${err}`);
+            return reply.code(500).send("Internal Server Error: error on getting rules");
         }
-        // console.log(units_rows[0].name);
-        const result = {};
-        for (let i = 0; i < units_rows.length; i++){
-            result[units_rows[i].name] = units_rows[i].unit_id;
-        }
-        // console.log(result);
-        return reply.code(200).send(JSON.stringify(result));
+        
     })
 
-    fastify.post('/api/add_unit', async(request, reply) => {
+    fastify.post('/api/add_rule', async(request, reply) => {
         const client = await fastify.db.client;
 
         // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
@@ -48,19 +41,19 @@ async function unitRoutes(fastify, options){
         const req_data = request.body;
 
         try {
-            let insert_data = req_data;
+            const insert_data = req_data;
             insert_data["user_id"] = user_id;
-            await insertUnit(client, insert_data);
+            await insertRule(client, insert_data);
             
-            return reply.code(200).send('New unit was added');
+            return reply.code(200).send('New rule was added');
         } catch (err) {
             console.log('Error while inserting data to database');
-            return reply.code(500).send('Internal Server Error: error on adding unit');
+            return reply.code(500).send('Internal Server Error: error on adding rule');
         }
 
     });
 
-    fastify.post('/api/delete_unit', async(request, reply)=>{
+    fastify.post('/api/delete_rule', async(request, reply)=>{
 
         // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
         // if (!token_row){
@@ -73,15 +66,15 @@ async function unitRoutes(fastify, options){
         const client = await fastify.db.client;
         const req_data = request.body;
         try {
-            await deleteUnit(client, req_data.unit_id);
-            return reply.code(200).send('Unit was deleted successfully');
+            await deleteRule(client, req_data.rule_id);
+            return reply.code(200).send('Rule was deleted successfully');
         } catch(err) {
-            console.error("Error in POST /api/delete_unit: ", err);
-            return reply.code(400).send('Bad Request: deletion of the unit failed');
+            console.error("Error in POST /api/delete_rule: ", err);
+            return reply.code(400).send('Bad Request: deletion of the rule failed');
         }
     })
 
-    fastify.post('/api/update_unit', async(request, reply)=>{
+    fastify.post('/api/update_rule', async(request, reply)=>{
         
         const client = fastify.db.client;
 
@@ -97,57 +90,56 @@ async function unitRoutes(fastify, options){
         const user_id = 1;
 
         try {
-            let insert_data = req_data;
+            const insert_data = req_data;
             insert_data["user_id"] = user_id;
-            await updateUnit(client, insert_data);
+            await updateRule(client, insert_data);
             
-            return reply.code(200).send('Unit was updated');
+            return reply.code(200).send('Rule was updated successfully');
         } catch (err) {
             console.log('Error while updating data to database');
-            return reply.code(500).send('Internal Server Error: error on editing unit');   
+            return reply.code(500).send('Internal Server Error: error on editing rule');   
         }
     });
 
-    async function insertUnit(client, insert_data){
+    async function insertRule(client, insert_data){
         try {
             const { rows } = await client.query(
-                'INSERT INTO unit(name, updated_date, updated_by) VALUES ($1, NOW(), $2);',
-                [insert_data.name, insert_data.user_id],
+                'INSERT INTO rule(rule_description, options, expiration_date, status, updated_date, updated_by) VALUES ($1, $2, $3, $4, NOW(), $5);',
+                [insert_data.rule_description, insert_data.options, insert_data.expiration_date, insert_data.status, insert_data.user_id],
             );
-          // Note: avoid doing expensive computation here, this will block releasing the client
             return;
         } catch (err) {
-            console.error("Insert Unit Error: ", err);
+            console.error("Insert Rule Error: ", err);
             throw new Error(err);
         }
     }    
 
-    async function updateUnit(client, insert_data){
+    async function updateRule(client, insert_data){
         try {
             const { rows } = await client.query(
-                'UPDATE employee SET name = $1, updated_date = NOW(), updated_by = $2 WHERE unit_id = $3',
-                [insert_data.name, insert_data.user_id, inser_data.unit_id],
+                'UPDATE rule SET rule_description = $1, options = $2, expiration_date = $3, status = $4, updated_date = NOW(), updated_by = $5 WHERE rule_id = $6',
+                [insert_data.rule_description, insert_data.options, insert_data.expiration_date, insert_data.status, insert_data.user_id, insert_data.rule_id],
             );
             return;
         } catch (err) {
-            console.error("Update Unit Error: ", err);
+            console.error("Update Rule Error: ", err);
             throw new Error(err);
         }
     }
 
     
-    async function deleteUnit(client, unit_id){
+    async function deleteRule(client, rule_id){
         try {
             const {rows} = await client.query(
-                'DELETE FROM unit WHERE unit_id = $1;', [unit_id]
+                'DELETE FROM rule WHERE rule_id = $1;', [rule_id]
             );
             return;
         } catch (err) {
-            console.log('Delete Unit Error: ', err);
+            console.log('Delete Rule Error: ', err);
             throw new Error(err);
         }
     }
 
 }
 
-export default unitRoutes;
+export default rulesRoutes;

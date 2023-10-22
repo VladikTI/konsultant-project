@@ -49,16 +49,9 @@ async function employeeRoutes (fastify, options){
         const user_id = null;
 
         try {
-            const insert_data = {
-                name: req_data.name,
-                surname: req_data.surname,
-                patronymic: req_data.patronymic,
-                position: req_data.position,
-                username: req_data.username,
-                password: hashedPassword,
-                available_vacation: req_data.available_vacation,
-                user_id: user_id
-            }
+            let insert_data = req_data;
+            insert_data["user_id"] = user_id;
+
             const employee_id = await insertEmployee(client, insert_data);
 
             await insertEmployeeRole(client, employee_id, req_data.role_id, user_id);
@@ -78,25 +71,18 @@ async function employeeRoutes (fastify, options){
         const client = fastify.db.client;
 
         // TODO: Add check for rights
-        const token_row = await findTokenInDatabase(client, request.headers.authorization.replace('Bearer ', ''), 'token');
-        if (!token_row){
-            return reply.redirect(401, '/api/refresh');
-        }
+        // const token_row = await findTokenInDatabase(client, request.headers.authorization.replace('Bearer ', ''), 'token');
+        // if (!token_row){
+        //     return reply.redirect(401, '/api/refresh');
+        // }
 
         const req_data = request.body;
-        const user_id = token_row.employee_id;
+        const user_id = 1;
 
         try {
-            const insert_data = {
-                name: req_data.name,
-                surname: req_data.surname,
-                patronymic: req_data.patronymic,
-                position: req_data.position,
-                username: req_data.username,
-                password: hashedPassword,
-                available_vacation: req_data.available_vacation,
-                user_id: user_id
-            }
+            let insert_data = req_data;
+            insert_data["user_id"] = user_id;
+            
             await updateEmployee(client, insert_data);
             
             return reply.code(200).send('Employee was updated');

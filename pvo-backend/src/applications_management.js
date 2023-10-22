@@ -53,12 +53,16 @@ async function applicationsManager(fastify, options){
         const client = await fastify.db.client;
         const req_data = request.body;
         try {
-            const insert_data = {
-                employee_id : req_data.employee_id,
-                start_date: DateTime.toSQLDate(req_data.start_date),
-                end_date: DateTime.toSQLDate(req_data.end_date),
-                status: "awaiting",
-            };
+            let insert_data = req_data;
+            insert_data.start_date = DateTime.toSQLDate(req_data.start_date);
+            insert_data.end_date = DateTime.toSQLDate(req_data.end_date);
+            insert_data["status"] = awaiting;
+            // const insert_data = {
+            //     employee_id : req_data.employee_id,
+            //     start_date: DateTime.toSQLDate(req_data.start_date),
+            //     end_date: DateTime.toSQLDate(req_data.end_date),
+            //     status: "awaiting",
+            // };
             await createApplication(client, insert_data);
             return reply.code(200).send('Application was created successfully');
         } catch (err) {
@@ -94,11 +98,8 @@ async function applicationsManager(fastify, options){
         const req_data = request.body;
         const user_id = 1; //TODO: Добавить проверку
         try {
-            const handle_data = {
-                request_id: req_data.request_id,
-                status: req_data.status,
-                user_id: user_id
-            }
+            let handle_data = req_data;
+            handle_data["user_id"] = user_id;
             await handleApplication(client, handle_data);
             return reply.code(200).send('Application was handled successfully');
         } catch (err) {
