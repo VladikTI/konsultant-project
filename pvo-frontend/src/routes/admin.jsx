@@ -4,7 +4,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import {Button, TextField} from "@mui/material";
+import {Autocomplete, Button, TextField} from "@mui/material";
 import axios from "axios";
 
 function CustomTabPanel(props) {
@@ -52,7 +52,7 @@ export default function BasicTabs() {
         password: '',
         unit_id: '',
         available_vacation: '',
-        role_id: '',
+        role_id: 2,
     });
 
     const handleChange = (event, newValue) => {
@@ -63,6 +63,27 @@ export default function BasicTabs() {
         const { name, value } = event.target;
         setEmployeeData({ ...employeeData, [name]: value });
     };
+
+    const handleInputRoleChange = (event, value) => {
+        // Обработчик события при выборе роли
+        if (value) {
+            setEmployeeData({...employeeData, role_id: value.id});
+        } else {
+            setEmployeeData({...employeeData, role_id: null});
+        }
+    };
+
+    async function fetchUnitData() {
+        try {
+            const response = await axios.get('/api/get_units'); // Укажите URL вашего сервера
+            const unitsData = response.data; // JSON-данные, полученные от сервера
+
+            console.log(unitsData);
+        } catch (error) {
+            // Обработка ошибок, если GET-запрос не удался
+            console.error('Ошибка при выполнении GET-запроса:', error);
+        }
+    }
 
     const handleAddEmployee = () => {
         axios
@@ -79,12 +100,16 @@ export default function BasicTabs() {
             });
     };
 
+    const roles = [{ id: 1, name: 'Руководитель' },
+        { id: 2, name: 'Сотрудник' }];
+
+
     return (
         <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                     <Tab label="Добавить отдел" {...a11yProps(0)} />
-                    <Tab label="Изменить отдел" {...a11yProps(1)} />
+                    <Tab label="Добавить сотрудника" {...a11yProps(1)} />
                     <Tab label="Удалить отдел" {...a11yProps(2)} />
                     <Tab label="Добавить сотрудника вне отдела" {...a11yProps(3)} />
                 </Tabs>
@@ -151,15 +176,6 @@ export default function BasicTabs() {
                     </Box>
                     <Box marginBottom={2}>
                     <TextField
-                        label="ID отдела"
-                        variant="outlined"
-                        fullWidth
-                        value={employeeData.unit_id}
-                        onChange={handleInputChange}
-                    />
-                    </Box>
-                    <Box marginBottom={2}>
-                    <TextField
                         label="Доступные дни отпуска"
                         variant="outlined"
                         fullWidth
@@ -168,13 +184,25 @@ export default function BasicTabs() {
                     />
                     </Box>
                     <Box marginBottom={2}>
-                    <TextField
-                        label="ID роли"
-                        variant="outlined"
-                        fullWidth
-                        value={employeeData.role_id}
-                        onChange={handleInputChange}
-                    />
+                        <Autocomplete
+                            disablePortal
+                            id="combo-box-demo"
+                            options={roles}
+                            sx={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Роль" />}
+                            value={roles.find((role) => role.id === employeeData.role_id) || ''}
+                            onChange={handleInputRoleChange}
+                            getOptionLabel={(option) => option.name}
+                        />
+                    </Box>
+                    <Box marginBottom={2}>
+                        <TextField
+                            label="ID отдела"
+                            variant="outlined"
+                            fullWidth
+                            value={employeeData.unit_id}
+                            onChange={handleInputChange}
+                        />
                     </Box>
                 </form>
                 <form><Button
@@ -188,7 +216,6 @@ export default function BasicTabs() {
                 </form>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={2}>
-                Item Three
             </CustomTabPanel>
             <CustomTabPanel value={value} index={3}>
                 Item Four
