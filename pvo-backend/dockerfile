@@ -3,7 +3,7 @@ FROM node:20
 WORKDIR /pvo-backend/
 
 COPY package.json /pvo-backend/
-RUN npm install fastify nodemon pg @fastify/postgres @fastify/jwt bcrypt @fastify/static luxon fastify-plugin @fastify/multipart
+RUN npm install fastify nodemon pg @fastify/postgres @fastify/jwt bcrypt @fastify/static luxon fastify-plugin @fastify/multipart @fastify/cors
 
 
 RUN apt-get update && apt-get install -y postgresql postgresql-contrib

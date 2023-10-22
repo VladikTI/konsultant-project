@@ -3,11 +3,14 @@ import bcrypt from 'bcrypt';
 import fastifyJwt from '@fastify/jwt';
 import { DateTime } from 'luxon';
 import dbconnector from './db.js';
+import cors from '@fastify/cors';
 
 
 const fastify = Fastify({ logger: true });
 
 fastify.register(dbconnector);
+
+
 
 async function authRoutes (fastify, options){
     // Register fastify-jwt with your secret key
@@ -15,18 +18,18 @@ async function authRoutes (fastify, options){
         secret: 'abcdef',
     });
 
-    
-    fastify.options('/auth', (request, reply) => {
-        reply.header('Access-Control-Allow-Origin', 'http://localhost'); // Replace with your specific origin
-        reply.header('Access-Control-Allow-Methods', 'OPTIONS, POST, GET');
-        reply.header('Access-Control-Allow-Headers', 'authorization, content-type');
-      
-        // Reply with a 204 No Content status code, indicating that the request is allowed
-        reply.status(200).send();
+
+    fastify.register(cors, {
+        origin: true,
+        methods: ['OPTIONS', 'GET', 'POST'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true
     });
+
 
     // Register route for user registration and JWT generation
     fastify.post('/auth', async (request, reply) => {
+
         const client = fastify.db.client;
         const { username, password } = request.body;
         try {
