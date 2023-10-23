@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import fastifyJwt from '@fastify/jwt';
 import { DateTime } from 'luxon';
 import dbconnector from './db.js';
-import cors from '@fastify/cors';
+// import cors from '@fastify/cors';
 
 
 const fastify = Fastify({ logger: true });
@@ -19,12 +19,12 @@ async function authRoutes (fastify, options){
     });
 
 
-    fastify.register(cors, {
-        origin: true,
-        methods: ['OPTIONS', 'GET', 'POST'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        credentials: true
-    });
+    // fastify.register(cors, {
+    //     origin: true,
+    //     methods: ['OPTIONS', 'GET', 'POST'],
+    //     allowedHeaders: ['Content-Type', 'Authorization'],
+    //     credentials: true
+    // });
 
 
     // Register route for user registration and JWT generation

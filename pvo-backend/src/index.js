@@ -1,4 +1,5 @@
-import Fastify from 'fastify'
+import Fastify from 'fastify';
+import cors from '@fastify/cors';
 import fastifyStatic from '@fastify/static'
 import path from 'path'
 
@@ -29,6 +30,12 @@ fastify.register(rulesRoutes);
 
 fastify.register(fileManager);
 
+fastify.register(cors, {
+  origin: true,
+  methods: ['OPTIONS', 'GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+});
 
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
