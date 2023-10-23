@@ -20,14 +20,22 @@ export default function DateTable({remoteData, applyData, setRemoteData, setAppl
 
         for (let k = 0; k < busyDays.length; k++) {
             let intersect = new Set([...busyDays[k]].filter(i => daysSet.has(i)));
-            if (intersect.length == 0) {
-                busyDays[k] = new Set(...busyDays[k], ...daysSet);
-                for (let m = 0; m < daysSet.length; m++){
-                    tableIds[k][m] = id;
+            if (intersect.size == 0) {
+                busyDays[k] = new Set([...busyDays[k], ...daysSet]);
+                for (let m = 0; m < daysSet.size; m++){
+                    tableIds[k][m + i_begin] = id;
                 }
                 break;
             }
         }
+    }
+
+    for(let x = 0; x < daysInYear; x++){
+        let str = '';
+        for(let y = 0; y < ROWS; y++){
+            str += tableIds[y][x] + ' ';
+        }
+        console.log(str);
     }
 
     return (<></>);
