@@ -8,6 +8,7 @@ import dbconnector from './db.js'
 import applicationsManager from './applications_management.js';
 import unitRoutes from './units.js';
 import fileManager from './file_management.js';
+import rulesRoutes from './rules.js';
 
 const fastify = Fastify({
   logger: true
@@ -24,7 +25,10 @@ fastify.register(unitRoutes);
 
 fastify.register(applicationsManager);
 
+fastify.register(rulesRoutes);
+
 fastify.register(fileManager);
+
 
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);

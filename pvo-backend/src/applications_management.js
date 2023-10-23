@@ -23,26 +23,26 @@ async function applicationsManager(fastify, options){
                 const rows = await getApplications(client, req.employee_id);
                 for (line of rows){
                     output_rows.push({
-                        "employee_id": line.employee_id,
-                        "start_date": DateTime.fromSQL(line.start_date).toISO({includeOffset: false}),
-                        "end_date": DateTime.fromSQL(line.end_date).toISO({includeOffset: false}),
-                        "days": line.days,
-                        "status": line.status,
-                        "created_date": DateTime.fromSQL(line.created_date).toISO({includeOffset: false}),
-                        "file_id": line.file_id
+                        employee_id: line.employee_id,
+                        start_date: DateTime.fromSQL(line.start_date).toISO({includeOffset: false}),
+                        end_date: DateTime.fromSQL(line.end_date).toISO({includeOffset: false}),
+                        days: line.days,
+                        status: line.status,
+                        created_date: DateTime.fromSQL(line.created_date).toISO({includeOffset: false}),
+                        file_id: line.file_id
                     });
                 };
                 const data = {
-                    "employee_id": req.employee_id,
-                    "applications": output_rows
+                    employee_id: req.employee_id,
+                    applications: output_rows
                 }
 
                 data_result.push(data);
             }
             const result = {
-                "data": data_result
+                data: data_result
             }
-            return reply.code(200).send(result);
+            return reply.code(200).send(JSON.stringify(result));
         } catch (err){
             console.log('Error in /api/get_applications: ', err);
             return reply.code(500).send('Internal Server Error: error on getting applications');

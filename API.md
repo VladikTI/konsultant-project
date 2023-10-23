@@ -204,7 +204,7 @@
     url: {application_document_store_service_url},
     headers: {
         Authorization: `Bearer &{token}`,
-        Content-Type: 'multipart/form-data'
+        Content-Type: 'application/pdf'
     }
     body: formData
 }
