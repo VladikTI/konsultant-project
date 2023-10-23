@@ -87,7 +87,7 @@ export default function BasicTabs() {
 
     const handleAddEmployee = () => {
         axios
-            .post('/api/add_employee', employeeData, {
+            .post('http://127.0.0.1:3000/add_employee', employeeData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
