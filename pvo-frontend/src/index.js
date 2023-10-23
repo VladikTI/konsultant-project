@@ -9,6 +9,16 @@ import Login from "./routes/login";
 import Apply from "./routes/apply";
 import ErrorPage from "./error-page";
 
+const dayjs = require('dayjs')
+const localizedFormat = require('dayjs/plugin/localizedFormat')
+const dayOfYear = require('dayjs/plugin/dayOfYear')
+
+require('dayjs/locale/ru')
+
+dayjs.extend(dayOfYear)
+dayjs.extend(localizedFormat)
+dayjs.locale('ru')
+
 const router = createBrowserRouter([
     {
         path: "/",

@@ -1,31 +1,18 @@
 import { 
-    Button, 
     Box, 
-    Typography, 
-    Container, 
-    CircularProgress,
-    ListItem, 
-    ListItemButton, 
-    ListItemText,
-    Card,
-    CardContent,
-    CardActions,
-    IconButton,
-    CloseButton,
-    TextField
+    Typography,
+    CircularProgress
 } from "@mui/material";
 
 import { useTheme } from '@mui/material/styles';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateField } from '@mui/x-date-pickers';
 import { useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList } from 'react-window';
 
 import HorizontalDivider from "../components/horizontalDivider";
 import VerticalDivider from "../components/verticalDivider";
+import DisplayPanel from "../components/apply/displayPanel";
+import Timeline from "../components/apply/timeline";
+import ApplyingPanel from "../components/apply/applyingPanel";
 
 
     /*
@@ -43,7 +30,7 @@ import VerticalDivider from "../components/verticalDivider";
             }
         ]
     }
-    ```
+    ``
     | Поле | Описание | Тип данных | Примечания |
     |------|----------|------------|------------|
     | _employee_id_ | ID сотрудника | **int** ||
@@ -79,13 +66,84 @@ export default function Apply() {
     
     useNavigate();
     const [loaded,      setLoaded]      = useState(false);
-    const [remoteData,  setRemoteData]  = useState({daysLeft: 300, myApplications: [
+    const [remoteData,  setRemoteData]  = useState({daysLeft: 28, myApplications: [
         {employee_id: 0, start_date: "2024-10-20", amount_days: 15, status: 1},
         {employee_id: 0, start_date: "2024-01-20", amount_days: 14, status: 1},
         {employee_id: 0, start_date: "2024-05-20", amount_days: 20, status: -1},
         {employee_id: 0, start_date: "2024-01-25", amount_days: 10, status: 0},
         {employee_id: 0, start_date: "2024-02-25", amount_days: 10, status: 0}
-    ], applications: []});
+    ], applications: [
+        {employee_id: 5, start_date: '2024-01-01', amount_days: 22, status: 1},
+        {employee_id: 5, start_date: '2024-02-03', amount_days: 11, status: 1},
+        {employee_id: 5, start_date: '2024-02-23', amount_days: 26, status: 1},
+        {employee_id: 5, start_date: '2024-04-01', amount_days: 22, status: 1},
+        {employee_id: 5, start_date: '2024-05-02', amount_days: 25, status: 1},
+        {employee_id: 5, start_date: '2024-06-06', amount_days: 28, status: 1},
+        {employee_id: 5, start_date: '2024-07-12', amount_days: 26, status: 1},
+        {employee_id: 5, start_date: '2024-08-14', amount_days: 19, status: 1},
+        {employee_id: 5, start_date: '2024-09-09', amount_days: 13, status: 1},
+        {employee_id: 5, start_date: '2024-10-06', amount_days: 18, status: 1},
+        {employee_id: 5, start_date: '2024-11-06', amount_days: 14, status: 1},
+        {employee_id: 12, start_date: '2024-01-01', amount_days: 13, status: 1},
+        {employee_id: 12, start_date: '2024-01-20', amount_days: 20, status: 1},
+        {employee_id: 12, start_date: '2024-02-21', amount_days: 27, status: 1},
+        {employee_id: 12, start_date: '2024-03-25', amount_days: 21, status: 1},
+        {employee_id: 12, start_date: '2024-04-26', amount_days: 20, status: 1},
+        {employee_id: 12, start_date: '2024-05-30', amount_days: 16, status: 1},
+        {employee_id: 12, start_date: '2024-06-28', amount_days: 25, status: 1},
+        {employee_id: 12, start_date: '2024-08-04', amount_days: 26, status: 1},
+        {employee_id: 12, start_date: '2024-09-08', amount_days: 11, status: 1},
+        {employee_id: 12, start_date: '2024-10-02', amount_days: 10, status: 1},
+        {employee_id: 12, start_date: '2024-10-18', amount_days: 22, status: 1},
+        {employee_id: 12, start_date: '2024-11-24', amount_days: 10, status: 1},
+        {employee_id: 123, start_date: '2024-01-01', amount_days: 25, status: 1},
+        {employee_id: 123, start_date: '2024-02-05', amount_days: 17, status: 1},
+        {employee_id: 123, start_date: '2024-03-03', amount_days: 12, status: 1},
+        {employee_id: 123, start_date: '2024-03-23', amount_days: 28, status: 1},
+        {employee_id: 123, start_date: '2024-04-28', amount_days: 17, status: 1},
+        {employee_id: 123, start_date: '2024-05-22', amount_days: 27, status: 1},
+        {employee_id: 123, start_date: '2024-06-30', amount_days: 12, status: 1},
+        {employee_id: 123, start_date: '2024-07-18', amount_days: 20, status: 1},
+        {employee_id: 123, start_date: '2024-08-20', amount_days: 25, status: 1},
+        {employee_id: 123, start_date: '2024-09-20', amount_days: 19, status: 1},
+        {employee_id: 123, start_date: '2024-10-22', amount_days: 19, status: 1},
+        {employee_id: 123, start_date: '2024-11-16', amount_days: 27, status: 1},
+        {employee_id: 525, start_date: '2024-01-01', amount_days: 27, status: 1},
+        {employee_id: 525, start_date: '2024-02-05', amount_days: 27, status: 1},
+        {employee_id: 525, start_date: '2024-03-17', amount_days: 19, status: 1},
+        {employee_id: 525, start_date: '2024-04-17', amount_days: 12, status: 1},
+        {employee_id: 525, start_date: '2024-05-13', amount_days: 22, status: 1},
+        {employee_id: 525, start_date: '2024-06-14', amount_days: 28, status: 1},
+        {employee_id: 525, start_date: '2024-07-20', amount_days: 19, status: 1},
+        {employee_id: 525, start_date: '2024-08-15', amount_days: 16, status: 1},
+        {employee_id: 525, start_date: '2024-09-07', amount_days: 11, status: 1},
+        {employee_id: 525, start_date: '2024-10-02', amount_days: 18, status: 1},
+        {employee_id: 525, start_date: '2024-11-01', amount_days: 12, status: 1},
+        {employee_id: 525, start_date: '2024-11-19', amount_days: 14, status: 1},
+        {employee_id: 52, start_date: '2024-01-01', amount_days: 11, status: 1},
+        {employee_id: 52, start_date: '2024-01-18', amount_days: 27, status: 1},
+        {employee_id: 52, start_date: '2024-02-29', amount_days: 22, status: 1},
+        {employee_id: 52, start_date: '2024-04-04', amount_days: 18, status: 1},
+        {employee_id: 52, start_date: '2024-05-05', amount_days: 17, status: 1},
+        {employee_id: 52, start_date: '2024-05-30', amount_days: 28, status: 1},
+        {employee_id: 52, start_date: '2024-07-08', amount_days: 28, status: 1},
+        {employee_id: 52, start_date: '2024-08-14', amount_days: 24, status: 1},
+        {employee_id: 52, start_date: '2024-09-19', amount_days: 21, status: 1},
+        {employee_id: 52, start_date: '2024-10-16', amount_days: 20, status: 1},
+        {employee_id: 52, start_date: '2024-11-19', amount_days: 13, status: 1},
+        {employee_id: 1234, start_date: '2024-01-01', amount_days: 28, status: 1},
+        {employee_id: 1234, start_date: '2024-02-13', amount_days: 20, status: 1},
+        {employee_id: 1234, start_date: '2024-03-12', amount_days: 17, status: 1},
+        {employee_id: 1234, start_date: '2024-04-03', amount_days: 18, status: 1},
+        {employee_id: 1234, start_date: '2024-04-27', amount_days: 17, status: 1},
+        {employee_id: 1234, start_date: '2024-05-24', amount_days: 15, status: 1},
+        {employee_id: 1234, start_date: '2024-06-18', amount_days: 23, status: 1},
+        {employee_id: 1234, start_date: '2024-07-16', amount_days: 13, status: 1},
+        {employee_id: 1234, start_date: '2024-08-05', amount_days: 17, status: 1},
+        {employee_id: 1234, start_date: '2024-08-27', amount_days: 28, status: 1},
+        {employee_id: 1234, start_date: '2024-10-09', amount_days: 27, status: 1},
+        {employee_id: 1234, start_date: '2024-11-19', amount_days: 12, status: 1},
+    ]});
     const [applyData,   setApplyData]   = useState({isApplying: false, selectedDay: 0, firstSelector: null, secondSelector: null});
 
     useEffect(() => {loadData(setLoaded, setRemoteData)});
@@ -105,8 +163,7 @@ export default function Apply() {
         <Box id="app" sx={{height: "100%", width: "100%", display: "flex"}}>
             <Panel remoteData={remoteData} applyData={applyData} setApplyData={setApplyData} setRemoteData={setRemoteData}/>
             <VerticalDivider/>
-            <div id="timeline"  style={{flex: "auto"}}>
-            </div>
+            <Timeline remoteData={remoteData} applyData={applyData} setApplyData={setApplyData} setRemoteData={setRemoteData}/>
             <VerticalDivider/>
             <div id="navbar"    style={{height: "100%", width: "100px"}}>
             </div>
@@ -114,12 +171,14 @@ export default function Apply() {
     );
 }
 
+
+
 function Panel({remoteData, applyData, setRemoteData, setApplyData}){
     const theme = useTheme();
     
     return (
         <Box sx={{height: "100%", width: "380px", display: "flex", flexDirection: "column"}}>
-            <Box>
+            <Box sx={{height: "59px", display: "flex", alignItems: "center"}}>
                 { 
                     !applyData.isApplying &&
                     <Typography variant="h5" fontWeight="600" gutterBottom color={theme.palette.blue.dark} sx={{paddingLeft: "10px", margin: "10px"}}>
@@ -134,9 +193,9 @@ function Panel({remoteData, applyData, setRemoteData, setApplyData}){
                 }
             </Box>
             <HorizontalDivider/>
-            <Box>
+            <Box sx={{height: "40px", display: "flex", alignItems: "center"}}>
                 <Typography variant="body1" fontWeight="600" gutterBottom sx={{paddingLeft: "10px", margin: "10px"}}>
-                    Доступные отпускные: {remoteData.daysLeft}
+                    Доступные дни для отпуска: {remoteData.daysLeft}
                 </Typography>
             </Box>
             <HorizontalDivider/>
@@ -154,168 +213,4 @@ function Panel({remoteData, applyData, setRemoteData, setApplyData}){
     );
 }
 
-function DisplayPanel({remoteData, applyData, setRemoteData, setApplyData}){
-    const theme = useTheme();
 
-    function onApplyButtonClick()
-    {
-        var data = JSON.parse(JSON.stringify(applyData));
-        data.isApplying = true;
-        setApplyData(data);    
-    }
-
-    if(remoteData.myApplications.length === 0){
-        return (
-            <Box sx={{width: "100%", height: "100%", display: "flex", flexDirection: "column"}}>
-                <Box sx={{flex: "2"}}/>
-                <Box sx={{textAlign: "center"}}>
-                    <Typography variant="h6" fontWeight="500" gutterBottom color={theme.palette.blue.dark}>
-                        У ВАС ПОКА НЕТ ЗАЯВОК
-                    </Typography>
-                </Box>
-                <Container sx={{display: "flex", justifyContent: "center", alignItems: "center", width: "300px", height:"80px"}}>
-                    <Button variant="contained" size="large" onClick={onApplyButtonClick} color="blue">Подать новую заявку</Button>
-                </Container>
-                <Box sx={{flex: "2"}}/>
-            </Box>
-        );
-    }
-    else {
-        return (
-            <Box sx={{width: "100%", height: "100%", display: "flex", flexDirection: "column"}}>
-                
-                <Box sx={{flex: "1", textAlign: "center"}}>
-                    <AutoSizer>
-                        {({height, width}) => (
-                            <FixedSizeList
-                                height={height}
-                                width={width}
-                                itemSize={180}
-                                itemCount={remoteData.myApplications.length}
-                                overscanCount={5}
-                            >
-                                {(props) => renderRow({...props, remoteData})}
-                            </FixedSizeList>
-                        )}
-
-                    </AutoSizer>
-                </Box>
-
-                <HorizontalDivider/>
-                
-                <Container sx={{display: "flex", justifyContent: "center", alignItems: "center", width: "300px", height:"80px"}}>
-                    <Button variant="contained" size="large" onClick={onApplyButtonClick} color='blue'>Подать новую заявку</Button>
-                </Container>
-
-            </Box>
-        );
-    }
-}
-
-var renderRow = props => {
-    const { index, style, remoteData } = props;
-
-    var application = remoteData.myApplications[index];
-    //    {"Начало: " + application.start_date + " длительность: " + application.amount_days + " статус: " + application.status} />
-    
-    var dateBegin = new Date(Date.parse(application.start_date));
-    var dateEnd = new Date(dateBegin);
-    dateEnd.setDate(dateEnd.getDate() + application.amount_days - 1);
-
-    if (application.amount_days % 10 == 1) var ending = " день";
-    else if (application.amount_days % 10 == 2) var ending = " дня";
-    else if (application.amount_days % 10 == 3) var ending = " дня";
-    else if (application.amount_days % 10 == 4) var ending = " дня";
-    else var ending = " дня";
-     
-    if (application.status == -1) var strStatus = "отказано";
-    else if (application.status == 0) var strStatus = "на рассмотрении";
-    else var strStatus = "одобрено";
-
-    return (
-        <ListItem style={{...style, padding: "10px", paddingBottom: "5px"}} key={index} component="div">
-            <Card variant="outlined" sx={{width:"100%", height:"100%", display: "flex", flexDirection: "column"}}>
-                <CardContent sx={{margin: "5px", padding: "5px", paddingLeft: "10px"}}>
-                    <Typography variant="body1" sx={{fontWeight:"400"}} gutterBottom>
-                        {dateBegin.toLocaleDateString('ru-RU')} - {dateEnd.toLocaleDateString('ru-RU')} 
-                    </Typography>
-                    <Typography variant="h5" sx={{fontWeight:"400"}} gutterBottom>
-                        {application.amount_days + ending} 
-                    </Typography>
-                    <Typography variant="h6" sx={{fontWeight:"400"}}>
-                        {"Статус: " + strStatus} 
-                    </Typography>
-                </CardContent>
-                <CardActions sx={{marginTop: "auto", padding: "0px", paddingLeft: "10px", paddingBottom: "5px"}}>
-                    <Button size="medium" color="red" sx={{padding:"5px"}}>Убрать заявку</Button>
-                </CardActions>
-            </Card>
-        </ListItem>
-    );
-}
-
-function ApplyingPanel({remoteData, applyData, setRemoteData, setApplyData}){
-    const theme = useTheme();
-
-    function onCancelApplyButtonClick()
-    {
-        var data = JSON.parse(JSON.stringify(applyData));
-        data.isApplying = false;
-        data.firstSelector = null;
-        data.secondSelector = null;
-        setApplyData(data);    
-    }
-    
-    return (
-        <Box sx={{width: "100%", height: "100%", display: "flex", flexDirection: "column"}}>
-            
-            <Box sx={{flex: "1", textAlign: "left"}}>
-                <Typography variant="h6" fontWeight="500" color={theme.palette.blue.dark} sx={{margin: "5px", marginLeft: "10px", marginTop: "5px", paddingLeft: "10px"}}>
-                    Даты:
-                </Typography>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DateField  
-                        sx = {{width: "340px", margin: "10px", marginLeft: "20px"}} 
-                        slotProps={{ textField: { size: 'medium' } }} 
-                        label = "Начало отпуска"
-                        focused = "true"
-                        format = "DD.MM.YYYY" 
-                        color = "blue" />
-                    <DateField  
-                        sx = {{width: "340px", margin: "10px", marginLeft: "20px", marginBottom: "20px"}} 
-                        slotProps={{ textField: { size: 'medium' } }} 
-                        label = "Конец отпуска"
-                        focused = "true"
-                        format = "DD.MM.YYYY" 
-                        color = "blue" />
-                </LocalizationProvider>
-                <HorizontalDivider/>
-                <Typography variant="h6" fontWeight="500" color={theme.palette.blue.dark} sx={{margin: "5px", marginLeft: "10px", paddingLeft: "10px"}}>
-                    Комментарий к заявке:
-                </Typography>
-                <Container disableGutters sx={{padding: "10px", paddingLeft: "20px", paddingRight: "20px"}}>
-                    <TextField
-                        id="outlined-multiline-static"
-                        color="blue"
-                        placeholder="Введите комментарий"
-                        focused
-                        multiline
-                        fullWidth
-                        rows={8}
-                        maxRows={16}
-                        InputProps={{style: {fontSize: 14, padding: "8px"}}}
-                    />
-                </Container>
-            </Box>
-
-            <HorizontalDivider/>
-            
-            <Container sx={{display: "flex", justifyContent: "center", alignItems: "center", width: "380px", height:"80px"}}>
-                <Button variant="contained" size="large" onClick={onCancelApplyButtonClick} color={"red"} sx = {{width: "154px"}}>Назад</Button>
-                <Box sx = {{width: "24px"}}></Box>
-                <Button variant="contained" size="large" color={"green"} sx = {{width: "154px"}}>Отправить</Button>
-            </Container>
-
-        </Box>
-    );
-}
