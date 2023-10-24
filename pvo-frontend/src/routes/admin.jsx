@@ -4,8 +4,9 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import {Autocomplete, Button, TextField} from "@mui/material";
+import {Alert, Autocomplete, Button, TextField} from "@mui/material";
 import axios from "axios";
+import {useState} from "react";
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -43,35 +44,47 @@ function a11yProps(index) {
 export default function BasicTabs() {
     const [value, setValue] = React.useState(0);
     const token = localStorage.getItem('token');
-    const [employeeData, setEmployeeData] = React.useState({
-        name: null,
-        surname: null,
-        patronymic: null,
-        position: null,
-        username: null,
-        password: null,
-        unit_id: null,
-        available_vacation: null,
-        role_id: 2,
-    });
+    // const [employeeData, setEmployeeData] = React.useState({
+    //     name: null,
+    //     surname: null,
+    //     patronymic: null,
+    //     position: null,
+    //     username: null,
+    //     password: null,
+    //     unit_id: null,
+    //     available_vacation: null,
+    //     role_id: 2,
+    // });
+    const [name, setName] = useState("");
+    const [surname, setSurname] = useState("");
+    const [patronymic, setPatronymic] = useState("");
+    const [position, setPosition] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [unit_id, setUnitId] = useState("");
+    const [available_vacation, setAvailableVacation] = useState("");
+    const [role_id, setRoleId] = useState("");
+    const [error, setError] = useState("");
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+    //
+    // const handleInputChange = (event) => {
+    //     const { name, value } = event.target;
+    //     setEmployeeData({ ...employeeData, [name]: value });
+    // };
+    //
+    // const handleInputRoleChange = (event, value) => {
+    //     // Обработчик события при выборе роли
+    //     if (value) {
+    //         setEmployeeData({...employeeData, role_id: value.id});
+    //     } else {
+    //         setEmployeeData({...employeeData, role_id: null});
+    //     }
+    // };
 
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setEmployeeData({ ...employeeData, [name]: value });
-    };
 
-    const handleInputRoleChange = (event, value) => {
-        // Обработчик события при выборе роли
-        if (value) {
-            setEmployeeData({...employeeData, role_id: value.id});
-        } else {
-            setEmployeeData({...employeeData, role_id: null});
-        }
-    };
 
     async function fetchUnitData() {
         try {
@@ -85,9 +98,22 @@ export default function BasicTabs() {
         }
     }
 
-    const handleAddEmployee = () => {
+    const handleAddEmployee = async (event) => {
+        event.preventDefault();
+        if (!username || !password || !name || !surname || !patronymic || !role_id || !unit_id
+            || !available_vacation || !position) {
+            setError("Пожалуйста, заполните все поля");
+            return;
+        }
+        setError("");
+
+
+        // clear the errors
+        setError("");
         axios
-            .post('http://127.0.0.1:3000/api/add_employee', employeeData, {
+            .post('http://127.0.0.1:3000/api/add_employee', {username: username, password: password, name: name,
+            surname: surname, patronymic: patronymic, position: position, available_vacation: available_vacation,
+            unit_id: unit_id, role_id: role_id}, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -118,14 +144,15 @@ export default function BasicTabs() {
                 Item One
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
+                {error && <Alert severity="error" sx={{my: 2}}>{error}</Alert>}
                 <form>
                     <Box marginBottom={2}>
                     <TextField
                         label="Имя"
                         variant="outlined"
                         fullWidth
-                        value={employeeData.name}
-                        onChange={handleInputChange}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -133,8 +160,8 @@ export default function BasicTabs() {
                         label="Фамилия"
                         variant="outlined"
                         fullWidth
-                        value={employeeData.surname}
-                        onChange={handleInputChange}
+                        value={surname}
+                        onChange={(e) => setSurname(e.target.value)}
                     />
                     </Box>
                         <Box marginBottom={2}>
@@ -142,8 +169,8 @@ export default function BasicTabs() {
                         label="Отчество"
                         variant="outlined"
                         fullWidth
-                        value={employeeData.patronymic}
-                        onChange={handleInputChange}
+                        value={patronymic}
+                        onChange={(e) => setPatronymic(e.target.value)}
                     />
                         </Box>
                     <Box marginBottom={2}>
@@ -151,8 +178,8 @@ export default function BasicTabs() {
                         label="Должность"
                         variant="outlined"
                         fullWidth
-                        value={employeeData.position}
-                        onChange={handleInputChange}
+                        value={position}
+                        onChange={(e) => setPosition(e.target.value)}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -160,8 +187,8 @@ export default function BasicTabs() {
                         label="Логин"
                         variant="outlined"
                         fullWidth
-                        value={employeeData.username}
-                        onChange={handleInputChange}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -170,8 +197,8 @@ export default function BasicTabs() {
                         variant="outlined"
                         fullWidth
                         type="password"
-                        value={employeeData.password}
-                        onChange={handleInputChange}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -179,8 +206,8 @@ export default function BasicTabs() {
                         label="Доступные дни отпуска"
                         variant="outlined"
                         fullWidth
-                        value={employeeData.available_vacation}
-                        onChange={handleInputChange}
+                        value={available_vacation}
+                        onChange={(e) => setAvailableVacation(e.target.value)}
                     />
                     </Box>
                     <Box marginBottom={2}>
@@ -190,8 +217,8 @@ export default function BasicTabs() {
                             options={roles}
                             sx={{ width: 300 }}
                             renderInput={(params) => <TextField {...params} label="Роль" />}
-                            value={roles.find((role) => role.id === employeeData.role_id) || ''}
-                            onChange={handleInputRoleChange}
+                            value={roles.find((role) => role.id === role_id) || ''}
+                            onChange={(e) => setRoleId(e.target.value)}
                             getOptionLabel={(option) => option.name}
                         />
                     </Box>
@@ -200,8 +227,8 @@ export default function BasicTabs() {
                             label="ID отдела"
                             variant="outlined"
                             fullWidth
-                            value={employeeData.unit_id}
-                            onChange={handleInputChange}
+                            value={unit_id}
+                            onChange={(e) => setUnitId(e.target.value)}
                         />
                     </Box>
                 </form>
