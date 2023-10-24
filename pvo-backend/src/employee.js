@@ -51,6 +51,7 @@ async function employeeRoutes (fastify, options){
         try {
             let insert_data = req_data;
             insert_data["user_id"] = user_id;
+            insert_data.password = hashedPassword;
 
             const employee_id = await insertEmployee(client, insert_data);
 

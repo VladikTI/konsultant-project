@@ -15,17 +15,17 @@ fastify.register(dbconnector);
 async function authRoutes (fastify, options){
     // Register fastify-jwt with your secret key
     fastify.register(fastifyJwt, {
-        secret: 'abcdef',
+        secret: '$2b$10$XXLk187ZPJU1OhhUw2.jEeFEYC4ufWO2fGuyEkGFRGdDhQoTm5gxm'
     });
 
 
-    // fastify.register(cors, {
-    //     origin: true,
-    //     methods: ['OPTIONS', 'GET', 'POST'],
-    //     allowedHeaders: ['Content-Type', 'Authorization'],
-    //     credentials: true
-    // });
-
+    fastify.decorate('authenicate', async function (request, reply){
+        try {
+            await request.jwtVerify();
+        } catch (err) {
+            reply.code(401).send(err);
+        }
+    })
 
     // Register route for user registration and JWT generation
     fastify.post('/auth', async (request, reply) => {
@@ -43,33 +43,37 @@ async function authRoutes (fastify, options){
                 const isPasswordValid = await bcrypt.compare(password, storedHashedPassword);
             
                 if (isPasswordValid) {
-                // Пароли совпадают, пользователь аутентифицирован
 
-                    // Generate a JWT token for the registered user
-                    const newAccessToken = await generateAccessToken(rows[0].employee_id)
+                    const newAccessToken = await generateAccessToken(username);
+                    const newRefreshToken = await generateRefreshToken(username);
+                    let accessTokenExpire = DateTime.local();
+                    let refreshTokenExpire = accessTokenExpire.plus({days: 1});
                     
                     try {
-                        const {rowsJWT} = await client.query('INSERT INTO authentication (employee_id, token, refresh_token, token_expire_date, refresh_token_expire_date) VALUES ($1,$2, $3, $4, $5)', 
-                        [rows[0].employee_id, newAccessToken.token, newAccessToken.refresh_token, 
-                        DateTime.local(newAccessToken.token_expire_date).toSQL({includeOffset: false}), 
-                        DateTime.local(newAccessToken.refresh_token_expire_date).toSQL({includeOffset: false})])
+                        await client.query(
+                            'INSERT INTO authentication (employee_id, token, refresh_token, token_expire_date, refresh_token_expire_date) VALUES ($1,$2, $3, $4, $5)', 
+                            [rows[0].employee_id, newAccessToken, newRefreshToken, 
+                             accessTokenExpire.toSQL({includeOffset: false}), refreshTokenExpire.toSQL({includeOffset: false})]
+                        )
                     } catch (err) {
                         console.log(err);
-                        return reply.status(500).send({error: 'Database error'});
+                        return reply.status(500).send('Database error');
                     }
                     
-                    return reply.code(201).send({"token": newAccessToken.token, "refresh_token": newAccessToken.refresh_token,
-                        "token_expire_date": DateTime.local(newAccessToken.token_expire_date).toString(), 
-                        "refresh_token_expire_date": DateTime.local(newAccessToken.refresh_token_expire_date).toString()});
+                    return reply.code(201).send({
+                        token: newAccessToken, 
+                        refresh_token: newRefreshToken,
+                        token_expire_date: accessTokenExpire.toString(), 
+                        refresh_token_expire_date: refreshTokenExpire.toString()
+                    });
                 } else {
                 // Пароли не совпадают
-                    return reply.status(401).send({ error: 'Authentication failed' });
+                    return reply.status(401).send('Authentication failed');
                 }
             }
         } catch (err){
             console.log(err);
-            return reply.status(500).send({ error: 'Database error' });
-            
+            return reply.status(500).send('Database error');
         }
     });
       
@@ -115,56 +119,75 @@ async function authRoutes (fastify, options){
     }
 
     function isRefreshTokenExpired(storedAuthTokens) {
-        // Проверка истечения срока действия Refresh Token
-        // Вернуть true, если истек, и false, если действителен
         const expireDate = DateTime.fromSQL(storedAuthTokens.refresh_token_expire_date);
         return expireDate.isAfter(DateTime.now());
     }
 
     // function isAccessTokenExpired(stored)
       
-    async function generateAccessToken(employee_id) {
-        // Генерация нового Access Token для пользователя
-        // Вернуть сгенерированный токен
-        
-        const client = fastify.db.client;
+    async function generateAccessToken(username) {
         try {
-            const { rows } = await client.query('SELECT username FROM employee WHERE employee_id=$1;', [employee_id]);
-            console.log('employee_id: ',employee_id);
-            console.log('rows: ', rows);
-            const tokenExpiresInMinutes = 60;
-            const tokenExpirationDateTime = DateTime.local().plus({minutes: tokenExpiresInMinutes});
+            const accessToken = fastify.jwt.sign({ name: username }, { expiresIn: '1h'});
+            return accessToken;
+        } catch (err) {
+            console.error("Generate Access Token Error", err);
+            throw new Error(err);
+        }
+    }
+
+    async function generateRefreshToken(username) {
+        try {
+            const refreshToken = fastify.jwt.sign({ name: username }, { expiresIn: '1d'});
+            return refreshToken;
+        } catch (err) {
+            console.error("Generate Refresh Token Error", err);
+            throw new Error(err);
+        }
+    }
+
+
+    // async function generateAccessToken(employee_id) {
+        
+    //     const client = fastify.db.client;
+    //     try {
+    //         const { rows } = await client.query('SELECT username FROM employee WHERE employee_id=$1;', [employee_id]);
+    //         console.log('employee_id: ',employee_id);
+    //         console.log('rows: ', rows);
+    //         const tokenExpiresInMinutes = 60;
+    //         const tokenExpirationDateTime = DateTime.local().plus({minutes: tokenExpiresInMinutes});
     
-            const refreshTokenExpiresInMinutes = 60*24;
-            const refreshTokenExpirationDateTime = DateTime.now().plus({minutes: refreshTokenExpiresInMinutes});
-            const username = rows[0].username;
-            const accessToken = fastify.jwt.sign({ username }, {expiresIn: tokenExpiresInMinutes * 60});
-            const refreshToken = fastify.jwt.sign({username}, 'rabcdef', {expiresIn: refreshTokenExpiresInMinutes * 60});
+    //         const refreshTokenExpiresInMinutes = 60*24;
+    //         const refreshTokenExpirationDateTime = DateTime.now().plus({minutes: refreshTokenExpiresInMinutes});
+    //         const username = rows[0].username;
+    //         const accessToken = fastify.jwt.sign({ username }, {expiresIn: tokenExpiresInMinutes * 60});
+    //         const refreshToken = fastify.jwt.sign({username}, 'rabcdef', {expiresIn: refreshTokenExpiresInMinutes * 60});
 
-            return {token: accessToken, refresh_token: refreshToken, token_expire_date: tokenExpirationDateTime, refresh_token_expire_date: refreshTokenExpirationDateTime};
-        } catch (err) {
-            console.error('Error generating JWT: ', err);
-            throw new Error(`Failed to create access token`);
-        }
-    }
+    //         return {token: accessToken, refresh_token: refreshToken, token_expire_date: tokenExpirationDateTime, refresh_token_expire_date: refreshTokenExpirationDateTime};
+    //     } catch (err) {
+    //         console.error('Error generating JWT: ', err);
+    //         throw new Error(`Failed to create access token`);
+    //     }
+    // }
 
-    async function determineAccess(client, token, token_name, role_name){
-        const token_row = await findTokenInDatabase(client, token, token_name);
+    
 
-        if (!token_row){
-            return reply.redirect(401, '/api/refresh');
-        }
+    // async function determineAccess(client, token, token_name, role_name){
+    //     const token_row = await findTokenInDatabase(client, token, token_name);
+
+    //     if (!token_row){
+    //         return reply.redirect(401, '/api/refresh');
+    //     }
         
-        try {
-            const employee_role = await client.query('SELECT * FROM employee_role JOIN role ON employee_role.role_id = role.role_id WHERE employee_id = $1 AND name = $2;',
-            [token_row.employee_id, role_name] );
-            return [token_row, employee_role];
-        } catch (err) {
-            console.error('Error determining access', err);
-            return [token_row, null];
-        }
+    //     try {
+    //         const employee_role = await client.query('SELECT * FROM employee_role JOIN role ON employee_role.role_id = role.role_id WHERE employee_id = $1 AND name = $2;',
+    //         [token_row.employee_id, role_name] );
+    //         return [token_row, employee_role];
+    //     } catch (err) {
+    //         console.error('Error determining access', err);
+    //         return [token_row, null];
+    //     }
         
-    }
+    // }
 
 };
 
