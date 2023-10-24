@@ -63,14 +63,14 @@ export default function BasicTabs() {
     const [password, setPassword] = useState("");
     const [unit_id, setUnitId] = useState("");
     const [available_vacation, setAvailableVacation] = useState("");
-    const [role_id, setRoleId] = useState("");
+    const [role_id, setRoleId] = useState(2);
     const [error, setError] = useState("");
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
     //
-    // const handleInputChange = (event) => {
+    // const handleInputCh3ange = (event) => {
     //     const { name, value } = event.target;
     //     setEmployeeData({ ...employeeData, [name]: value });
     // };
@@ -87,15 +87,16 @@ export default function BasicTabs() {
 
 
     async function fetchUnitData() {
+        const unitsData = {};
         try {
-            const response = await axios.get('/api/get_units'); // Укажите URL вашего сервера
+            const response = await axios.get('http://127.0.0.1:3000/api/get_units'); // Укажите URL вашего сервера
             const unitsData = response.data; // JSON-данные, полученные от сервера
-
             console.log(unitsData);
         } catch (error) {
             // Обработка ошибок, если GET-запрос не удался
             console.error('Ошибка при выполнении GET-запроса:', error);
         }
+        return unitsData;
     }
 
     const handleAddEmployee = async (event) => {
@@ -128,6 +129,8 @@ export default function BasicTabs() {
 
     const roles = [{ id: 1, name: 'Руководитель' },
         { id: 2, name: 'Сотрудник' }];
+
+    const units = fetchUnitData();
 
 
     return (
@@ -211,15 +214,12 @@ export default function BasicTabs() {
                     />
                     </Box>
                     <Box marginBottom={2}>
-                        <Autocomplete
-                            disablePortal
-                            id="combo-box-demo"
-                            options={roles}
-                            sx={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="Роль" />}
-                            value={roles.find((role) => role.id === role_id) || ''}
+                        <TextField
+                            label="ID роли"
+                            variant="outlined"
+                            fullWidth
+                            value={role_id}
                             onChange={(e) => setRoleId(e.target.value)}
-                            getOptionLabel={(option) => option.name}
                         />
                     </Box>
                     <Box marginBottom={2}>
