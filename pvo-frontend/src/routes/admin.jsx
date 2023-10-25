@@ -243,7 +243,7 @@ export default function BasicTabs() {
                             id="combo-box-demo"
                             options={units}
                             style={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="Роль" variant="outlined" />}
+                            renderInput={(params) => <TextField {...params} label="Отдел" variant="outlined" />}
 
                         />
                     </Box>
