@@ -14,22 +14,32 @@ fastify.register(authRoutes);
 
 async function employeeRoutes (fastify, options){
 
-    // const employeeBodyJsonSchema = {
-    //     type: 'object',
-    //     properties: {
-    //         name: {type: 'string'},
-    //         surname: {type: 'string'},
-    //         patronymic: {type: 'string'},
-    //         position: {type: 'string'},
-    //         username: {type: 'string'},
-    //         password: {type: 'string'},
-    //         unit_id: {type: 'int'},
-    //         available_vacation: {type: 'int'},
-    //         role_id: {type: 'int'}
-    //     }
-    // }
+    fastify.get('/api/get_employees', async(request, reply) => {
+        const client = await fastify.db.client;
 
-    fastify.post('/api/add_employee', async(request, reply) => {
+        let data_result = new Array();
+
+        try {
+            const rows = await getEmployees(client);
+            for (let line of rows){
+                const data = {
+                    employee_id: request.employee_id,
+                    employee: line
+                }
+    
+                data_result.push(data);
+            };
+            const result = {
+                data: data_result
+            }
+            return reply.code(200).send(JSON.stringify(result));
+        } catch (err) {
+            console.log('Error in /api/get_employees: ', err);
+            return reply.code(500).send('Error in /api/get_employees:', err);
+        }
+    })
+
+    fastify.post('/api/add_employee', {preValidation: [fastify.authenticate]}, async(request, reply) => {
 
         const client = await fastify.db.client;
         
@@ -39,7 +49,6 @@ async function employeeRoutes (fastify, options){
         //     return reply.redirect(401, '/api/refresh');
         // }
 
-        console.log('entered');
         const req_data = request.body;
         
         const salt = await bcrypt.genSaltSync(10);
@@ -67,7 +76,7 @@ async function employeeRoutes (fastify, options){
 
     });
 
-    fastify.post('/api/update_employee', async(request, reply)=>{
+    fastify.post('/api/update_employee', {preValidation: [fastify.authenticate]}, async(request, reply)=>{
         
         const client = fastify.db.client;
 
@@ -94,7 +103,7 @@ async function employeeRoutes (fastify, options){
         
     });
 
-    fastify.post('/api/delete_employee', async(request, reply)=>{
+    fastify.post('/api/delete_employee', {preValidation: [fastify.authenticate]}, async(request, reply)=>{
 
         // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
         // if (!token_row){
@@ -186,6 +195,17 @@ async function employeeRoutes (fastify, options){
         }
     }
 
+    async function getEmployees(client){
+        try {
+            const {rows} = await client.query(
+                'SELECT employee.employee_id, employee.name as name, surname, patronymic, position, unit.name as unit FROM employee JOIN employee_unit ON employee.employee_id = employee_unit.employee_id JOIN unit ON employee_unit.unit_id = unit.unit_id; '
+            )
+            return rows;
+        } catch (err) {
+            console.log('Get Employees Error: ', err);
+            throw new Error(err);
+        }
+    }
 }
 
 

@@ -3,31 +3,14 @@ import bcrypt from 'bcrypt';
 import fastifyJwt from '@fastify/jwt';
 import { DateTime } from 'luxon';
 import dbconnector from './db.js';
-// import cors from '@fastify/cors';
-
 
 const fastify = Fastify({ logger: true });
 
 fastify.register(dbconnector);
 
 
-
 async function authRoutes (fastify, options){
-    // Register fastify-jwt with your secret key
-    fastify.register(fastifyJwt, {
-        secret: '$2b$10$XXLk187ZPJU1OhhUw2.jEeFEYC4ufWO2fGuyEkGFRGdDhQoTm5gxm'
-    });
 
-
-    fastify.decorate('authenicate', async function (request, reply){
-        try {
-            await request.jwtVerify();
-        } catch (err) {
-            reply.code(401).send(err);
-        }
-    })
-
-    // Register route for user registration and JWT generation
     fastify.post('/auth', async (request, reply) => {
 
         const client = fastify.db.client;
@@ -60,12 +43,12 @@ async function authRoutes (fastify, options){
                         return reply.status(500).send('Database error');
                     }
                     
-                    return reply.code(201).send({
+                    return reply.code(201).send(JSON.stringify({
                         token: newAccessToken, 
                         refresh_token: newRefreshToken,
                         token_expire_date: accessTokenExpire.toString(), 
                         refresh_token_expire_date: refreshTokenExpire.toString()
-                    });
+                    }));
                 } else {
                 // Пароли не совпадают
                     return reply.status(401).send('Authentication failed');
@@ -77,31 +60,57 @@ async function authRoutes (fastify, options){
         }
     });
       
-    fastify.post('/api/refresh/', async (request, reply) => {
+    fastify.post('/api/refresh', {preValidation: [fastify.authenticate]}, async (request, reply) => {
         const client = fastify.db.client;
-        // Проверьте, есть ли Refresh Token в вашей базе данных
+
         const refreshTokenString = request.headers.authorization.replace('Bearer ', '');
         const storedAuthTokens = await findTokenInDatabase(client, refreshTokenString, 'refresh_token');
         
         // const employee_id = await findUserId(client, refreshTokenString, "refresh_token");
 
         if (!storedAuthTokens) {
-            reply.code(401).send({ error: 'Invalid Refresh Token' }).redirect('/login');
+            reply.code(401).send('Invalid Refresh Token').redirect('/login');
             return;
         }
     
-        // Проверьте, не истек ли срок действия Refresh Token
         if (isRefreshTokenExpired(storedAuthTokens)) {
-            reply.code(401).send({ error: 'Refresh Token has expired' }).redirect('/login');
+            reply.code(401).send('Refresh Token has expired').redirect('/login');
             return;
         }
     
         // Если все проверки успешны, создайте новый Access Token и верните его
-        const newAccessToken = generateAccessToken(employee_id);
+
+        let username;
+        try {
+            const { rows }= await client.query(
+                'SELECT username FROM employee WHERE employee_id=$1;', 
+                [storedAuthTokens.employee_id]
+            );
+            username = rows[0].username;
+        } catch(err) {
+            console.error("Error While Refreshing Token: ", err);
+            return reply.code(500).send('Refresh Error: Database Error');
+        }
+
+        const newAccessToken = await generateAccessToken(username);
+        const accessTokenExpire = DateTime.local();
+
+        try {
+            await client.query(
+                'UPDATE authentication SET token = $1, token_expire_date = $2 WHERE employee_id = $3',
+                [newAccessToken, accessTokenExpire.toSQL(), storedAuthTokens.employee_id]
+            );
+        } catch (err) {
+            console.error("Error While Refreshing Token: ", err);
+            return reply.code(500).send('Refresh Error: Database Error');
+        }
         
-        return reply.code(200).send({ "token": newAccessToken.accessToken, "refresh_token": newAccessToken.refreshToken, 
-        "token_expire_date": newAccessToken.tokenExpirationDateTime,
-        "refresh_token_expire_date": newAccessToken.refreshTokenExpirationDateTime});
+        return reply.code(200).send(JSON.stringify({
+            token: newAccessToken, 
+            refresh_token: storedAuthTokens.refreshToken, 
+            token_expire_date: accessTokenExpire,
+            refresh_token_expire_date: storedAuthTokens.refresh_token_expire_date
+        }));
     });
     // Ваши функции для работы с базой данных и генерации токенов
 
@@ -119,15 +128,14 @@ async function authRoutes (fastify, options){
     }
 
     function isRefreshTokenExpired(storedAuthTokens) {
+
         const expireDate = DateTime.fromSQL(storedAuthTokens.refresh_token_expire_date);
-        return expireDate.isAfter(DateTime.now());
+        return expireDate>DateTime.now();
     }
 
-    // function isAccessTokenExpired(stored)
-      
     async function generateAccessToken(username) {
         try {
-            const accessToken = fastify.jwt.sign({ name: username }, { expiresIn: '1h'});
+            const accessToken = fastify.jwt.sign({ name: username }, { expiresIn: '60000'});
             return accessToken;
         } catch (err) {
             console.error("Generate Access Token Error", err);
@@ -137,39 +145,13 @@ async function authRoutes (fastify, options){
 
     async function generateRefreshToken(username) {
         try {
-            const refreshToken = fastify.jwt.sign({ name: username }, { expiresIn: '1d'});
+            const refreshToken = fastify.jwt.sign({ name: username }, { expiresIn: '120000'});
             return refreshToken;
         } catch (err) {
             console.error("Generate Refresh Token Error", err);
             throw new Error(err);
         }
     }
-
-
-    // async function generateAccessToken(employee_id) {
-        
-    //     const client = fastify.db.client;
-    //     try {
-    //         const { rows } = await client.query('SELECT username FROM employee WHERE employee_id=$1;', [employee_id]);
-    //         console.log('employee_id: ',employee_id);
-    //         console.log('rows: ', rows);
-    //         const tokenExpiresInMinutes = 60;
-    //         const tokenExpirationDateTime = DateTime.local().plus({minutes: tokenExpiresInMinutes});
-    
-    //         const refreshTokenExpiresInMinutes = 60*24;
-    //         const refreshTokenExpirationDateTime = DateTime.now().plus({minutes: refreshTokenExpiresInMinutes});
-    //         const username = rows[0].username;
-    //         const accessToken = fastify.jwt.sign({ username }, {expiresIn: tokenExpiresInMinutes * 60});
-    //         const refreshToken = fastify.jwt.sign({username}, 'rabcdef', {expiresIn: refreshTokenExpiresInMinutes * 60});
-
-    //         return {token: accessToken, refresh_token: refreshToken, token_expire_date: tokenExpirationDateTime, refresh_token_expire_date: refreshTokenExpirationDateTime};
-    //     } catch (err) {
-    //         console.error('Error generating JWT: ', err);
-    //         throw new Error(`Failed to create access token`);
-    //     }
-    // }
-
-    
 
     // async function determineAccess(client, token, token_name, role_name){
     //     const token_row = await findTokenInDatabase(client, token, token_name);

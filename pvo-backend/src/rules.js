@@ -13,7 +13,7 @@ fastify.register(authRoutes);
 
 async function rulesRoutes(fastify, options){
 
-    fastify.get('/api/get_rules', async(request, reply) => {
+    fastify.get('/api/get_rules', {preValidation: [fastify.authenticate]}, async(request, reply) => {
         const client = await fastify.db.client;
         try {
             const {rows} = await client.query('SELECT * FROM rules');
@@ -25,7 +25,7 @@ async function rulesRoutes(fastify, options){
         
     })
 
-    fastify.post('/api/add_rule', async(request, reply) => {
+    fastify.post('/api/add_rule', {preValidation: [fastify.authenticate]}, async(request, reply) => {
         const client = await fastify.db.client;
 
         // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
@@ -53,7 +53,7 @@ async function rulesRoutes(fastify, options){
 
     });
 
-    fastify.post('/api/delete_rule', async(request, reply)=>{
+    fastify.post('/api/delete_rule', {preValidation: [fastify.authenticate]}, async(request, reply)=>{
 
         // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
         // if (!token_row){
@@ -74,7 +74,7 @@ async function rulesRoutes(fastify, options){
         }
     })
 
-    fastify.post('/api/update_rule', async(request, reply)=>{
+    fastify.post('/api/update_rule', {preValidation: [fastify.authenticate]}, async(request, reply)=>{
         
         const client = fastify.db.client;
 

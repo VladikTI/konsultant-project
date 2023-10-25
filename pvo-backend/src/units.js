@@ -3,6 +3,12 @@ import Fastify from 'fastify';
 import dbconnector from './db.js';
 import authRoutes from './auth.js';
 
+import fastifyJwt from '@fastify/jwt';
+
+// import validateToken from './validateToken.js';
+
+
+
 const fastify = Fastify({
     logger: true
 });
@@ -11,9 +17,13 @@ fastify.register(dbconnector);
 
 fastify.register(authRoutes);
 
+fastify.register(fastifyJwt);
+
+
+
 async function unitRoutes(fastify, options){
 
-    fastify.get('/api/get_units', async(request, reply) => {
+    fastify.get('/api/get_units', {preValidation: [fastify.authenticate]}, async(request, reply) => {
         const client = await fastify.db.client;
         let units_rows;
         try {
@@ -32,7 +42,7 @@ async function unitRoutes(fastify, options){
         return reply.code(200).send(JSON.stringify(result));
     })
 
-    fastify.post('/api/add_unit', async(request, reply) => {
+    fastify.post('/api/add_unit', {preValidation: [fastify.authenticate]}, async(request, reply) => {
         const client = await fastify.db.client;
 
         // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
@@ -60,7 +70,7 @@ async function unitRoutes(fastify, options){
 
     });
 
-    fastify.post('/api/delete_unit', async(request, reply)=>{
+    fastify.post('/api/delete_unit', {preValidation: [fastify.authenticate]}, async(request, reply)=>{
 
         // const [token_row, employee_role] = await determineAccess(client, request.headers.authorization.replace('Bearer ', ''), 'token', 'Employer')
         // if (!token_row){
@@ -81,7 +91,7 @@ async function unitRoutes(fastify, options){
         }
     })
 
-    fastify.post('/api/update_unit', async(request, reply)=>{
+    fastify.post('/api/update_unit', {preValidation: [fastify.authenticate]}, async(request, reply)=>{
         
         const client = fastify.db.client;
 

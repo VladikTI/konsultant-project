@@ -1,7 +1,6 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import fastifyStatic from '@fastify/static'
-import path from 'path'
+import fastifyJwt from '@fastify/jwt';
 
 import authRoutes from './auth.js';
 import employeeRoutes from './employee.js';
@@ -30,25 +29,25 @@ fastify.register(rulesRoutes);
 
 fastify.register(fileManager);
 
+fastify.register(fastifyJwt, {
+  secret: '$2b$10$XXLk187ZPJU1OhhUw2.jEeFEYC4ufWO2fGuyEkGFRGdDhQoTm5gxm'
+});
+
+fastify.decorate("authenticate", async function (request, reply) {
+  try {
+      await request.jwtVerify();
+  } catch (err) {
+      reply.send(err);
+  }
+});
+
+
 fastify.register(cors, {
   origin: true,
   methods: ['OPTIONS', 'GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 });
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-
-
-// fastify.register(fastifyStatic, {
-//     root: path.join(__dirname, 'public')
-// });
-
-
-// fastify.get('/admin', async (request, reply) => {
-    // const token = request.headers.authorization
-// });
 
 const start = async () => {
   try {
