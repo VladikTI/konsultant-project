@@ -28,6 +28,7 @@ async function applicationsManager(fastify, options){
                         end_date: DateTime.fromSQL(line.end_date).toISO({includeOffset: false}),
                         days: line.days,
                         status: line.status,
+                        comment: line.comment,
                         created_date: DateTime.fromSQL(line.created_date).toISO({includeOffset: false}),
                         file_id: line.file_id
                     });
@@ -111,7 +112,7 @@ async function applicationsManager(fastify, options){
     async function getApplications(client, employee_id){
         try {
             const {rows} = await client.query(
-                'SELECT request_id, employee_id, start_date, end_date, days, status, created_date, file_id FROM request WHERE employee_id = $1;', [employee_id]
+                'SELECT request_id, employee_id, start_date, end_date, days, status, comment, created_date, file_id FROM request WHERE employee_id = $1;', [employee_id]
             )
             return rows;
         } catch (err) {
@@ -123,9 +124,9 @@ async function applicationsManager(fastify, options){
     async function createApplication(client, insert_data){
         try {
             const {rows} = await client.query(
-                'INSERT INTO request (employee_id, start_date, end_date, days, status, created_date, updated_date, updated_by) VALUES ($1, $2, $3, $4, $5, NOW(), NOW(), $6);', 
+                'INSERT INTO request (employee_id, start_date, end_date, days, status, comment, created_date, updated_date, updated_by) VALUES ($1, $2, $3, $4, $5, NOW(), NOW(), $6);', 
                 [insert_data.employee_id, insert_data.start_date, insert_data.end_date, insert_data.days,
-                 insert_data.status, insert_data.employee_id]
+                 insert_data.status, insert_data.comment, insert_data.employee_id]
             );
             return;
         } catch (err) {

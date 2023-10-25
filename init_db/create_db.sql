@@ -74,6 +74,7 @@ create table request(
 request_id serial primary key, employee_id integer,
 start_date date, end_date date,
 days integer, status varchar(50),
+comment text,
 created_date timestamp, file_id integer,
 updated_date timestamp, updated_by integer,
 foreign key (employee_id) references employee (employee_id) on delete cascade on update cascade,
