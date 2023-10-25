@@ -6,8 +6,12 @@ import {
     TableBody,
     TableRow,
     TableCell,
-    Box
+    Box,
+    Typography
 } from "@mui/material";
+
+import { useTheme } from '@mui/material/styles';
+import AutoSizer from "react-virtualized-auto-sizer";
 
 const dayjs = require('dayjs')
 
@@ -15,6 +19,8 @@ const ROWS = 10;
 const COLUMNS = 30;
 
 export default function DateTable({remoteData, applyData, setRemoteData, setApplyData}){
+    const theme = useTheme();
+
     var year = new Date().getFullYear() + 1;
     var daysInYear = ((year % 4 === 0 && year % 100 > 0) || year %400 == 0) ? 366 : 365;
     var firstDay = new Date(year, 0, 1);
@@ -80,11 +86,23 @@ export default function DateTable({remoteData, applyData, setRemoteData, setAppl
             }
 
             result.push(<TableCell colSpan={i - iStart} sx={{padding: '6px', textAlign: "center", height: "40px", textOverflow: "ellipsis"}}>
-                <Box sx = {{
-                    height: "100%", 
-                    bgcolor: "blue.light", 
-                    opacity: "0.2",
-                    borderRadius:"10px"}}></Box>
+                <Box
+                    sx = {{bgcolor: theme.palette.blue.light + '33'}} 
+                    style = {{
+                    display: "flex",
+                    height: "100%",
+                    padding: "4px",
+                    borderRadius:"10px"}}>
+                    <AutoSizer>
+                        {({height, width}) => (
+                            <Box sx = {{height: height, width: width, display: "flex"}}>
+                                <Typography color={theme.palette.blue.dark} gutterBottom sx={{margin:"auto"}} fontWeight="500" noWrap>
+                                    Владислав Тихонов
+                                </Typography>
+                            </Box>
+                        )}
+                    </AutoSizer>
+                </Box>
             </TableCell>);
 
             if(tableIds[row][i0 + i] == -1){
@@ -100,12 +118,24 @@ export default function DateTable({remoteData, applyData, setRemoteData, setAppl
             result.push(<TableCell colSpan={1} sx = {{padding: '0px', textAlign: "center", height: "40px"}}></TableCell>);
         }
         if (id != -1){
-            result.push(<TableCell colSpan={i - iStart} sx={{padding: '6px', textAlign: "center", height: "40px", textOverflow: "ellipsis"}}>
-                <Box sx = {{
-                    height: "100%", 
-                    bgcolor: "blue.light", 
-                    opacity: "0.2",
-                    borderRadius:"10px"}}></Box>
+            result.push(<TableCell colSpan={i - iStart} style={{padding: '6px', textAlign: "center", height: "40px", flex: "0", overflow: "clip"}}>
+                <Box
+                    sx = {{bgcolor: theme.palette.blue.light + '33'}} 
+                    style = {{
+                    display: "flex",
+                    height: "100%",
+                    padding: "4px",
+                    borderRadius:"10px"}}>
+                    <AutoSizer>
+                        {({height, width}) => (
+                            <Box sx = {{height: height, width: width, display: "flex"}}>
+                                <Typography color={theme.palette.blue.dark} gutterBottom sx={{margin:"auto"}} fontWeight="500" noWrap>
+                                    Владислав Тихонов
+                                </Typography>
+                            </Box>
+                        )}
+                    </AutoSizer>
+                </Box>
             </TableCell>);
         }
         return result;

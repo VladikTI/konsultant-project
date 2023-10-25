@@ -16,7 +16,7 @@ export default function Timeline({remoteData, applyData, setRemoteData, setApply
     return (
         <Box sx={{height: "100%", display: "flex", flexDirection: "column", flex: "auto"}}>
             <Box sx={{height: "100px", display: "flex", alignItems: "center"}}>
-                <Typography variant="h3" fontWeight="600" gutterBottom color={theme.palette.blue.dark} sx={{paddingLeft: "10px", margin: "auto"}}>
+                <Typography variant="h3" fontWeight="600" gutterBottom color={theme.palette.blue.dark} sx={{margin: "auto"}}>
                     {year}
                 </Typography>
             </Box>

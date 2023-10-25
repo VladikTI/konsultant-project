@@ -8,6 +8,7 @@ import LoginPage from "./routes/login.jsx";
 import UsersPage from "./routes/usersPage";
 import AdminPage from "./routes/admin";
 import EditingPage from "./routes/editing";
+import Apply from "./routes/apply.jsx";
 
 const App = observer(() => {
 
@@ -28,6 +29,7 @@ const App = observer(() => {
           </Route>
 
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/apply" element={<Apply/>} />
 
           <Route path="/editing" element={<EditingPage />} />
 
