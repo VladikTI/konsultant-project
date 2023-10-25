@@ -10,6 +10,7 @@ import ErrorPage from "./error-page";
 import Admin from "./routes/admin";
 import Editing from "./routes/editing"
 import Apply from "./routes/apply";
+import UserPrivateWrapper from './userPrivateWrapper';
 
 
 const dayjs = require('dayjs')
@@ -25,25 +26,32 @@ dayjs.locale('ru')
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Navigate to="login"/>,
+        element: <Navigate to="apply"/>,
         errorElement: <ErrorPage/>,  // new
+    },
+    {
+        path: "/",
+        element: <UserPrivateWrapper/>,
+        errorElement: <ErrorPage/>,
+        children: [
+            {
+                path: "/admin",
+                element: <Admin/>,
+            },
+            {
+                path: "/editing",
+                element: <Editing/>,
+            },
+            {
+                path: "/apply",
+                element: <Apply/>,
+            },
+        ]
     },
     {
         path: "/login",
         element: <Login/>,
-    },
-    {
-        path: "/apply",
-        element: <Apply/>,
-    },
-    {
-        path: "/admin",
-        element: <Admin/>,
-    },
-    {
-        path: "/editing",
-        element: <Editing/>,
-    },
+    }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
