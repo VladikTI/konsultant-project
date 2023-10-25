@@ -75,22 +75,54 @@ export default function DateSlider({remoteData, applyData, setRemoteData, setApp
     function valuetext(value) {
         return dayjs(firstDay).dayOfYear(value + 1).format('LL');
     }
+
+    function onLeftClick(){
+        var data = JSON.parse(JSON.stringify(applyData));
+        data.selectedDay = Math.max(14, data.selectedDay-1);
+        setApplyData(data);    
+    }
+
+    function onLeftLeftClick(){
+        var data = JSON.parse(JSON.stringify(applyData));
+        data.selectedDay = Math.max(14, data.selectedDay-7);
+        setApplyData(data);    
+    }
+
+    function onRightClick(){
+        var data = JSON.parse(JSON.stringify(applyData));
+        data.selectedDay = Math.min(daysInYear-16, data.selectedDay+1);
+        setApplyData(data);    
+    }
+
+    function onRightRightClick(){
+        var data = JSON.parse(JSON.stringify(applyData));
+        data.selectedDay = Math.min(daysInYear-16, data.selectedDay+7);
+        setApplyData(data);    
+    }
+
+    function onSliderChange(event, value){
+        var data = JSON.parse(JSON.stringify(applyData));
+        data.selectedDay = value;
+        setApplyData(data);  
+    }
     
     return (
         <Stack direction="row" alignItems="center" spacing={1} sx={{padding: "20px"}} >
-            <IconButton sx={{flex: "0", padding: "0px"}} size="large">
+            <IconButton sx={{flex: "0", padding: "0px"}} size="large" onClick = {onLeftLeftClick}>
                 <KeyboardDoubleArrowLeftIcon/>
             </IconButton>
-            <IconButton sx={{flex: "0", padding: "0px"}} size="large">
+            <IconButton sx={{flex: "0", padding: "0px"}} size="large" onClick = {onLeftClick}>
                 <KeyboardArrowLeftIcon/>
             </IconButton>
             <Box sx={{ flex: "1"}}>
                 <Slider
+                    key={`slider-${applyData.selectedDay}`}
                     color = "blue"
-                    min={0}
-                    max={daysInYear-1}
+                    min={14}
+                    max={daysInYear-16}
                     step={1}
-                    defaultValue={15}
+                    onChangeCommitted={onSliderChange}
+                    defaultValue={applyData.selectedDay}
                     valueLabelFormat={valuetext}
                     valueLabelDisplay="auto"
                     marks={marks}
@@ -114,10 +146,10 @@ export default function DateSlider({remoteData, applyData, setRemoteData, setApp
                     }}
                 />
             </Box>
-            <IconButton sx={{flex: "0", padding: "0px"}} size="large">
+            <IconButton sx={{flex: "0", padding: "0px"}} size="large" onClick = {onRightClick}>
                 <KeyboardArrowRightIcon/>
             </IconButton>
-            <IconButton sx={{flex: "0", padding: "0px"}} size="large">
+            <IconButton sx={{flex: "0", padding: "0px"}} size="large" onClick = {onRightRightClick}>
                 <KeyboardDoubleArrowRightIcon/>
             </IconButton>
         </Stack> 

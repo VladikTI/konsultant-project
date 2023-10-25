@@ -144,7 +144,7 @@ export default function Apply() {
         {employee_id: 1234, start_date: '2024-10-09', amount_days: 27, status: 1},
         {employee_id: 1234, start_date: '2024-11-19', amount_days: 12, status: 1},
     ]});
-    const [applyData,   setApplyData]   = useState({isApplying: false, selectedDay: 0, firstSelector: null, secondSelector: null});
+    const [applyData,   setApplyData]   = useState({isApplying: false, selectedDay: 14, firstSelector: null, secondSelector: null});
 
     useEffect(() => {loadData(setLoaded, setRemoteData)});
 
@@ -165,7 +165,7 @@ export default function Apply() {
             <VerticalDivider/>
             <Timeline remoteData={remoteData} applyData={applyData} setApplyData={setApplyData} setRemoteData={setRemoteData}/>
             <VerticalDivider/>
-            <div id="navbar"    style={{height: "100%", width: "100px"}}>
+            <div id="navbar"    style={{height: "100%", width: "100px", flex:"none"}}>
             </div>
         </Box>
     );
@@ -177,7 +177,7 @@ function Panel({remoteData, applyData, setRemoteData, setApplyData}){
     const theme = useTheme();
     
     return (
-        <Box sx={{height: "100%", width: "380px", display: "flex", flexDirection: "column"}}>
+        <Box sx={{height: "100%", width: "380px", display: "flex", flexDirection: "column", flex: "none"}}>
             <Box sx={{height: "59px", display: "flex", alignItems: "center"}}>
                 { 
                     !applyData.isApplying &&

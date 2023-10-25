@@ -47,8 +47,8 @@ const appTheme = createTheme(
                 contrastText: '#000000',
             },
             blue: {
-                main: '#00A3FF',
-                light: '#0072E5',
+                main: '#0072E5',
+                light: '#00A3FF',
                 dark: '#0077FF',
                 contrastText: '#ffffff',
             },
