@@ -195,6 +195,12 @@ function Panel({remoteData, applyData, setRemoteData, setApplyData}){
             <HorizontalDivider/>
             <Box sx={{height: "40px", display: "flex", alignItems: "center"}}>
                 <Typography variant="body1" fontWeight="600" gutterBottom sx={{paddingLeft: "10px", margin: "10px"}}>
+                    Малявко Ян Александрович
+                </Typography>
+            </Box>
+            <HorizontalDivider/>
+            <Box sx={{height: "40px", display: "flex", alignItems: "center"}}>
+                <Typography variant="body1" fontWeight="600" gutterBottom sx={{paddingLeft: "10px", margin: "10px"}}>
                     Доступные дни для отпуска: {remoteData.daysLeft}
                 </Typography>
             </Box>
