@@ -14,7 +14,7 @@ fastify.register(authRoutes);
 
 async function employeeRoutes (fastify, options){
 
-    fastify.get('/api/get_employees', async(request, reply) => {
+    fastify.get('/api/get_employees', {preValidation: [fastify.authenticate]}, async(request, reply) => {
         const client = await fastify.db.client;
 
         let data_result = new Array();
@@ -36,6 +36,31 @@ async function employeeRoutes (fastify, options){
         } catch (err) {
             console.log('Error in /api/get_employees: ', err);
             return reply.code(500).send('Error in /api/get_employees:', err);
+        }
+    })
+
+    fastify.get('/api/get_unit_employees', {preValidation: [fastify.authenticate]}, async(request, reply) => {
+        const client = await fastify.db.client;
+
+        let data_result = new Array();
+
+        try {
+            const rows = await getUnitEmployees(client, request.body.employee_id);
+            for (let line of rows){
+                const data = {
+                    employee_id: request.employee_id,
+                    employee: line
+                }
+    
+                data_result.push(data);
+            };
+            const result = {
+                data: data_result
+            }
+            return reply.code(200).send(JSON.stringify(result));
+        } catch (err) {
+            console.log('Error in /api/get_unit_employees: ', err);
+            return reply.code(500).send('Error in /api/get_unit_employees:', err);
         }
     })
 
@@ -203,6 +228,19 @@ async function employeeRoutes (fastify, options){
             return rows;
         } catch (err) {
             console.log('Get Employees Error: ', err);
+            throw new Error(err);
+        }
+    }
+
+    async function getUnitEmployees(client, employee_id){
+        try {
+            const { rows } = await client.query(
+                'SELECT employee.employee_id, employee.name as name, surname, patronymic, position, unit.name as unit FROM employee JOIN employee_unit ON employee.employee_id = employee_unit.employee_id JOIN unit ON employee_unit.unit_id = unit.unit_id WHERE unit.unit_id IN (SELECT unit_id FROM employee_unit WHERE employee_id = $1);',
+                [employee_id]
+            )
+            return rows;
+        } catch (err) {
+            console.log('Get Unit Employees Error: ', err);
             throw new Error(err);
         }
     }
