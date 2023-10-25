@@ -71,7 +71,7 @@ async function employeeRoutes (fastify, options){
         // TODO: Add check for rights
         // const token_row = await findTokenInDatabase(client, request.headers.authorization.replace('Bearer ', ''), 'token');
         // if (!token_row){
-        //     return reply.redirect(401, '/api/refresh');
+        //     return reply.redirect(401);
         // }
 
         const req_data = request.body;
@@ -79,8 +79,8 @@ async function employeeRoutes (fastify, options){
         const salt = await bcrypt.genSaltSync(10);
         const hashedPassword = await bcrypt.hashSync(req_data.password, salt);
 
-        // const token_row = await findTokenInDatabase(client, req_data.token, 'token');
         const user_id = null;
+        // const user_id = token_row.employee_id
 
         try {
             let insert_data = req_data;

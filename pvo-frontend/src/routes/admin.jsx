@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useState} from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -6,8 +7,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import {Alert, Autocomplete, Button, TextField} from "@mui/material";
 import axios from "axios";
-import {useState} from "react";
-import { useTheme } from '@mui/material/styles';
+import {useTheme} from '@mui/material/styles';
+
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -43,61 +44,25 @@ function a11yProps(index) {
 }
 
 export default function BasicTabs() {
-    const [value, setValue] = React.useState(0);
+    const roles = ['Руководитель', 'Сотрудник'];
+    const [units, setUnits] = useState(["Отдел 1", "Отдел 2", "Отдел 3"]);
+    const [value, setValue] = React.useState("");
+    const [value1, setValue1] = React.useState(roles[0]);
+    const [value2, setValue2] = React.useState(units[0]);
     const token = localStorage.getItem('token');
-    // const [employeeData, setEmployeeData] = React.useState({
-    //     name: null,
-    //     surname: null,
-    //     patronymic: null,
-    //     position: null,
-    //     username: null,
-    //     password: null,
-    //     unit_id: null,
-    //     available_vacation: null,
-    //     role_id: 2,
-    // });
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
     const [patronymic, setPatronymic] = useState("");
     const [position, setPosition] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [unit_id, setUnitId] = useState("");
+    const [unit_id, setUnitId] = useState(units[0]);
     const [available_vacation, setAvailableVacation] = useState("");
-    const [role_id, setRoleId] = useState(2);
+    const [role_id, setRoleId] = useState(roles[0]);
     const [error, setError] = useState("");
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
-    };
-    //
-    // const handleInputCh3ange = (event) => {
-    //     const { name, value } = event.target;
-    //     setEmployeeData({ ...employeeData, [name]: value });
-    // };
-    //
-    // const handleInputRoleChange = (event, value) => {
-    //     // Обработчик события при выборе роли
-    //     if (value) {
-    //         setEmployeeData({...employeeData, role_id: value.id});
-    //     } else {
-    //         setEmployeeData({...employeeData, role_id: null});
-    //     }
-    // };
-
-
-
-    async function fetchUnitData() {
-        const unitsData = {};
-        try {
-            const response = await axios.get('http://127.0.0.1:3000/api/get_units'); // Укажите URL вашего сервера
-            const unitsData = response.data; // JSON-данные, полученные от сервера
-            console.log(unitsData);
-        } catch (error) {
-            // Обработка ошибок, если GET-запрос не удался
-            console.error('Ошибка при выполнении GET-запроса:', error);
-        }
-        return unitsData;
     }
 
     const handleAddEmployee = async (event) => {
@@ -107,10 +72,6 @@ export default function BasicTabs() {
             setError("Пожалуйста, заполните все поля");
             return;
         }
-        setError("");
-
-
-        // clear the errors
         setError("");
         axios
             .post('http://127.0.0.1:3000/api/add_employee', {username: username, password: password, name: name,
@@ -128,10 +89,27 @@ export default function BasicTabs() {
             });
     };
 
-    const roles = [{ id: 1, name: 'Руководитель' },
-        { id: 2, name: 'Сотрудник' }];
+    const handleAddUnit = async (event) => {
+        if (!name) {
+            setError("Пожалуйста, заполните все поля");
+            return;
+        }
+        setUnits((prevUnits) => [...prevUnits, name]);
+        setError("");
+        axios
+            .post('http://127.0.0.1:3000/api/add_unit', {name: name}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+            .then((response) => {
+                // Обработка успешного ответа от сервера
 
-    const units = fetchUnitData();
+            })
+            .catch((error) => {
+                console.error('Ошибка при отправке запроса:', error);
+            });
+    };
 
     const theme = useTheme();
 
@@ -147,11 +125,40 @@ export default function BasicTabs() {
                 </Tabs>
             </Box>
             <CustomTabPanel color={theme.palette.blue.dark} value={value} index={0}>
-                Item One
+                {error && <Alert severity="error" sx={{my: 2}}>{error}</Alert>}
+                <form>
+                <Box marginBottom={2}>
+                    <TextField
+                        label="Название отдела"
+                        variant="outlined"
+                        fullWidth
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </Box>
+                </form>
+                <form><Button
+                    variant="contained"
+                    color="primary"
+                    style={{ position: 'absolute', right: '40px' }}
+                    onClick={handleAddUnit}
+                >
+                    Добавить
+                </Button>
+                </form>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
                 {error && <Alert severity="error" sx={{my: 2}}>{error}</Alert>}
                 <form>
+                    <Box marginBottom={2}>
+                        <TextField
+                            label="Фамилия"
+                            variant="outlined"
+                            fullWidth
+                            value={surname}
+                            onChange={(e) => setSurname(e.target.value)}
+                        />
+                    </Box>
                     <Box marginBottom={2}>
                     <TextField
                         label="Имя"
@@ -159,15 +166,6 @@ export default function BasicTabs() {
                         fullWidth
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                    />
-                    </Box>
-                    <Box marginBottom={2}>
-                    <TextField
-                        label="Фамилия"
-                        variant="outlined"
-                        fullWidth
-                        value={surname}
-                        onChange={(e) => setSurname(e.target.value)}
                     />
                     </Box>
                         <Box marginBottom={2}>
@@ -217,21 +215,36 @@ export default function BasicTabs() {
                     />
                     </Box>
                     <Box marginBottom={2}>
-                        <TextField
-                            label="ID роли"
-                            variant="outlined"
-                            fullWidth
-                            value={role_id}
-                            onChange={(e) => setRoleId(e.target.value)}
+                        <Autocomplete
+                            value={value1}
+                            onChange={(event, newValue1) => {
+                                setValue1(newValue1);
+                                if (value1 === "Сотрудник") {
+                                    setRoleId(2)
+                                }
+                                else if (value1 === "Руководитель") {
+                                    setRoleId(1)
+                                }
+                            }}
+                            id="combo-box-demo"
+                            options={roles}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Роль" variant="outlined" />}
+
                         />
                     </Box>
                     <Box marginBottom={2}>
-                        <TextField
-                            label="ID отдела"
-                            variant="outlined"
-                            fullWidth
-                            value={unit_id}
-                            onChange={(e) => setUnitId(e.target.value)}
+                        <Autocomplete
+                            value={value2}
+                            onChange={(event, newValue2) => {
+                                setValue2(newValue2);
+                                setUnitId(units.indexOf(value2) + 1);
+                            }}
+                            id="combo-box-demo"
+                            options={units}
+                            style={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Отдел" variant="outlined" />}
+
                         />
                     </Box>
                 </form>
