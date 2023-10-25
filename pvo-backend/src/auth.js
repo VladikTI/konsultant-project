@@ -66,8 +66,6 @@ async function authRoutes (fastify, options){
         const refreshTokenString = request.headers.authorization.replace('Bearer ', '');
         const storedAuthTokens = await findTokenInDatabase(client, refreshTokenString, 'refresh_token');
         
-        // const employee_id = await findUserId(client, refreshTokenString, "refresh_token");
-
         if (!storedAuthTokens) {
             reply.code(401).send('Invalid Refresh Token').redirect('/login');
             return;
@@ -78,8 +76,6 @@ async function authRoutes (fastify, options){
             return;
         }
     
-        // Если все проверки успешны, создайте новый Access Token и верните его
-
         let username;
         try {
             const { rows }= await client.query(
@@ -112,7 +108,6 @@ async function authRoutes (fastify, options){
             refresh_token_expire_date: storedAuthTokens.refresh_token_expire_date
         }));
     });
-    // Ваши функции для работы с базой данных и генерации токенов
 
     async function findTokenInDatabase(client, token, token_name) {
         try {
@@ -172,8 +167,6 @@ async function authRoutes (fastify, options){
     // }
 
 };
-
-
 
 
 
