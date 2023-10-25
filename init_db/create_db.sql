@@ -109,3 +109,20 @@ foreign key (updated_by) references employee (employee_id)
 
 create index idx_authentication_token_expire_date on authentication (token_expire_date);
 create index idx_authentication_refresh_token_expire_date on authentication (refresh_token_expire_date);
+
+
+INSERT INTO employee (
+    name, 
+    surname, 
+    patronymic, 
+    position, 
+    username, 
+    password,
+    updated_date
+) VALUES ('Admin', 'Admin', 'Admin', 'Admin', 'admin', '$2b$10$XXLk187ZPJU1OhhUw2.jEeFEYC4ufWO2fGuyEkGFRGdDhQoTm5gxm', NOW());
+
+INSERT INTO role (
+    name,
+    updated_date,
+    updated_by
+) VALUES ('Employer', NOW(), 1), ('Employee', NOW(), 1);
