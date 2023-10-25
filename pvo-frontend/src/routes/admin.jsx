@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import {Alert, Autocomplete, Button, TextField} from "@mui/material";
 import axios from "axios";
 import {useState} from "react";
+import { useTheme } from '@mui/material/styles';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -132,18 +133,20 @@ export default function BasicTabs() {
 
     const units = fetchUnitData();
 
+    const theme = useTheme();
 
+    //Можно более аккуратно цвета настроить через стиль, но я этим сейчас заниматься не буду // 25.10.2023 6:43
     return (
         <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                <Tabs textColor="secondary" value={value} onChange={handleChange} aria-label="basic tabs example">
                     <Tab label="Добавить отдел" {...a11yProps(0)} />
                     <Tab label="Добавить сотрудника" {...a11yProps(1)} />
                     <Tab label="Удалить отдел" {...a11yProps(2)} />
                     <Tab label="Добавить сотрудника вне отдела" {...a11yProps(3)} />
                 </Tabs>
             </Box>
-            <CustomTabPanel value={value} index={0}>
+            <CustomTabPanel color={theme.palette.blue.dark} value={value} index={0}>
                 Item One
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
