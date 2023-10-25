@@ -1,4 +1,4 @@
-import {Alert, Box, Button, Container, TextField, ThemeProvider, Typography} from "@mui/material";
+import {Alert, Box, Button, Container, TextField, Typography} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import { instance } from "../api.config.js";
@@ -10,8 +10,6 @@ export default function Login() {
     const [error, setError] = useState("");
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
-
-    const theme = useTheme();
 
     const onSubmit = async (event) => {
         event.preventDefault();
