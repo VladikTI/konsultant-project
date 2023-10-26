@@ -1,11 +1,14 @@
-import {Alert, Box, Button, Container, TextField, Typography} from "@mui/material";
-import {useNavigate} from "react-router-dom";
-import {useState} from "react";
-import { instance } from "../api.config.js";
+import { Alert, Box, Button, Container, TextField, Typography } from "@mui/material";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { axiosInstance } from "../axiosInstance.js";
+
+import { authContext, AuthStatus } from "../contexts/authContext";
 
 import { useTheme } from '@mui/material/styles';
 
 export default function Login() {
+    const authCont = useContext(authContext);
     const navigate = useNavigate();
     const [error, setError] = useState("");
     const [login, setLogin] = useState("");
@@ -25,46 +28,44 @@ export default function Login() {
 
         // TODO: send the login request
         console.log("Logging in...");
-        instance.post("http://127.0.0.1:3000/auth", {username: login, password: password}, {
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("token"),
-                'Content-Type': 'application/json',
-            }
-        })
-            .then(response => navigate("/admin"))
+        authCont.login(login, password)
+            .then(response => {navigate("/apply")})
             .catch(error => console.error(error));
     }
 
     return (
-        <Container maxWidth="xs" sx={{mt: 30}}>
-            <Typography variant="h5" component="h1" gutterBottom textAlign="center">
-                Вход в аккаунт
-            </Typography>
-            {error && <Alert severity="error" sx={{my: 2}}>{error}</Alert>}
-            <Box component="form" onSubmit={onSubmit}>
-                <TextField
-                    color="blue"
-                    label="Логин"
-                    variant="outlined"
-                    autoComplete="login"
-                    value={login}
-                    onChange={(e) => setLogin(e.target.value)}
-                    sx={{mt: 1}}
-                    fullWidth
-                />
-                <TextField
-                    color="blue"
-                    label="Пароль"
-                    variant="outlined"
-                    type="password"
-                    autoComplete="new-password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    sx={{mt: 3}}
-                    fullWidth
-                />
-                <Button variant="contained" color="blue" type="submit" sx={{mt: 3}} fullWidth>Войти</Button>
-            </Box>
-        </Container>
+        <>
+            {authCont.authStatus == AuthStatus.AUTHORIZED && <Navigate to="/apply"/>}
+            <Container maxWidth="xs" sx={{mt: 30}}>
+                <Typography variant="h5" component="h1" gutterBottom textAlign="center">
+                    Вход в аккаунт
+                </Typography>
+                {error && <Alert severity="error" sx={{my: 2}}>{error}</Alert>}
+                <Box component="form" onSubmit={onSubmit}>
+                    <TextField
+                        color="blue"
+                        label="Логин"
+                        variant="outlined"
+                        autoComplete="login"
+                        value={login}
+                        onChange={(e) => setLogin(e.target.value)}
+                        sx={{mt: 1}}
+                        fullWidth
+                    />
+                    <TextField
+                        color="blue"
+                        label="Пароль"
+                        variant="outlined"
+                        type="password"
+                        autoComplete="new-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        sx={{mt: 3}}
+                        fullWidth
+                    />
+                    <Button variant="contained" color="blue" type="submit" sx={{mt: 3}} fullWidth>Войти</Button>
+                </Box>
+            </Container>
+        </>
     )
 }
