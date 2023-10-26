@@ -6,150 +6,41 @@ import {
 
 import { useTheme } from '@mui/material/styles';
 import { useNavigate, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext} from "react";
 
 import HorizontalDivider from "../components/horizontalDivider";
 import VerticalDivider from "../components/verticalDivider";
 import DisplayPanel from "../components/apply/displayPanel";
 import Timeline from "../components/apply/timeline";
 import ApplyingPanel from "../components/apply/applyingPanel";
+import { AuthStatus, authContext } from "../contexts/authContext";
 
-
-    /*
-
-    {
-    "data":[
-        {
-            "employee_id": EMPLOYEE_ID,
-            "applications": [{ 
-                    "employee_id": EMPLOYEE_ID,
-                    "start_date": START_DATE,
-                    "amount_days": AMOUNT_DAYS,
-                    "status": STATUS
-                }]
-            }
-        ]
-    }
-    ``
-    | Поле | Описание | Тип данных | Примечания |
-    |------|----------|------------|------------|
-    | _employee_id_ | ID сотрудника | **int** ||
-    | _start_date_ | Дата начала отпуска | **string** | Дата в формате YYYY-MM-DD |
-    | _amount_days_ | Количество дней отпуска | **int** ||
-    | _status_ | Статус заявления | **int** | -1: Отказано; 0: На рассмотрении; 1: Одобрена |
-
-    */
-
-    /*
-
-    remoteData{
-        daysLeft: int,
-        myApplications: [{}],
-        applications: [{}]
-    }
-
-    */
-
-async function loadData(setLoaded, setApplyData)
-{
-    let promise = new Promise((resolve, reject) => {
-        setTimeout(() => resolve("готово!"), 500)
-    });
-
-    let result = await promise; // будет ждать, пока промис не выполнится (*)
-    setLoaded(true);
-}
-
-function isAuth(){return true;}
-
-export default function Apply() {
-    
-    useNavigate();
+export default function Apply() {    
+    const navigate = useNavigate();
+    const authData = useContext(authContext);
     const [loaded,      setLoaded]      = useState(false);
-    const [remoteData,  setRemoteData]  = useState({daysLeft: 28, myApplications: [
-        {employee_id: 0, start_date: "2024-10-20", amount_days: 15, status: 1},
-        {employee_id: 0, start_date: "2024-01-20", amount_days: 14, status: 1},
-        {employee_id: 0, start_date: "2024-05-20", amount_days: 20, status: -1},
-        {employee_id: 0, start_date: "2024-01-25", amount_days: 10, status: 0},
-        {employee_id: 0, start_date: "2024-02-25", amount_days: 10, status: 0}
-    ], applications: [
-        {employee_id: 5, start_date: '2024-01-01', amount_days: 22, status: 1},
-        {employee_id: 5, start_date: '2024-02-03', amount_days: 11, status: 1},
-        {employee_id: 5, start_date: '2024-02-23', amount_days: 26, status: 1},
-        {employee_id: 5, start_date: '2024-04-01', amount_days: 22, status: 1},
-        {employee_id: 5, start_date: '2024-05-02', amount_days: 25, status: 1},
-        {employee_id: 5, start_date: '2024-06-06', amount_days: 28, status: 1},
-        {employee_id: 5, start_date: '2024-07-12', amount_days: 26, status: 1},
-        {employee_id: 5, start_date: '2024-08-14', amount_days: 19, status: 1},
-        {employee_id: 5, start_date: '2024-09-09', amount_days: 13, status: 1},
-        {employee_id: 5, start_date: '2024-10-06', amount_days: 18, status: 1},
-        {employee_id: 5, start_date: '2024-11-06', amount_days: 14, status: 1},
-        {employee_id: 12, start_date: '2024-01-01', amount_days: 13, status: 1},
-        {employee_id: 12, start_date: '2024-01-20', amount_days: 20, status: 1},
-        {employee_id: 12, start_date: '2024-02-21', amount_days: 27, status: 1},
-        {employee_id: 12, start_date: '2024-03-25', amount_days: 21, status: 1},
-        {employee_id: 12, start_date: '2024-04-26', amount_days: 20, status: 1},
-        {employee_id: 12, start_date: '2024-05-30', amount_days: 16, status: 1},
-        {employee_id: 12, start_date: '2024-06-28', amount_days: 25, status: 1},
-        {employee_id: 12, start_date: '2024-08-04', amount_days: 26, status: 1},
-        {employee_id: 12, start_date: '2024-09-08', amount_days: 11, status: 1},
-        {employee_id: 12, start_date: '2024-10-02', amount_days: 10, status: 1},
-        {employee_id: 12, start_date: '2024-10-18', amount_days: 22, status: 1},
-        {employee_id: 12, start_date: '2024-11-24', amount_days: 10, status: 1},
-        {employee_id: 123, start_date: '2024-01-01', amount_days: 25, status: 1},
-        {employee_id: 123, start_date: '2024-02-05', amount_days: 17, status: 1},
-        {employee_id: 123, start_date: '2024-03-03', amount_days: 12, status: 1},
-        {employee_id: 123, start_date: '2024-03-23', amount_days: 28, status: 1},
-        {employee_id: 123, start_date: '2024-04-28', amount_days: 17, status: 1},
-        {employee_id: 123, start_date: '2024-05-22', amount_days: 27, status: 1},
-        {employee_id: 123, start_date: '2024-06-30', amount_days: 12, status: 1},
-        {employee_id: 123, start_date: '2024-07-18', amount_days: 20, status: 1},
-        {employee_id: 123, start_date: '2024-08-20', amount_days: 25, status: 1},
-        {employee_id: 123, start_date: '2024-09-20', amount_days: 19, status: 1},
-        {employee_id: 123, start_date: '2024-10-22', amount_days: 19, status: 1},
-        {employee_id: 123, start_date: '2024-11-16', amount_days: 27, status: 1},
-        {employee_id: 525, start_date: '2024-01-01', amount_days: 27, status: 1},
-        {employee_id: 525, start_date: '2024-02-05', amount_days: 27, status: 1},
-        {employee_id: 525, start_date: '2024-03-17', amount_days: 19, status: 1},
-        {employee_id: 525, start_date: '2024-04-17', amount_days: 12, status: 1},
-        {employee_id: 525, start_date: '2024-05-13', amount_days: 22, status: 1},
-        {employee_id: 525, start_date: '2024-06-14', amount_days: 28, status: 1},
-        {employee_id: 525, start_date: '2024-07-20', amount_days: 19, status: 1},
-        {employee_id: 525, start_date: '2024-08-15', amount_days: 16, status: 1},
-        {employee_id: 525, start_date: '2024-09-07', amount_days: 11, status: 1},
-        {employee_id: 525, start_date: '2024-10-02', amount_days: 18, status: 1},
-        {employee_id: 525, start_date: '2024-11-01', amount_days: 12, status: 1},
-        {employee_id: 525, start_date: '2024-11-19', amount_days: 14, status: 1},
-        {employee_id: 52, start_date: '2024-01-01', amount_days: 11, status: 1},
-        {employee_id: 52, start_date: '2024-01-18', amount_days: 27, status: 1},
-        {employee_id: 52, start_date: '2024-02-29', amount_days: 22, status: 1},
-        {employee_id: 52, start_date: '2024-04-04', amount_days: 18, status: 1},
-        {employee_id: 52, start_date: '2024-05-05', amount_days: 17, status: 1},
-        {employee_id: 52, start_date: '2024-05-30', amount_days: 28, status: 1},
-        {employee_id: 52, start_date: '2024-07-08', amount_days: 28, status: 1},
-        {employee_id: 52, start_date: '2024-08-14', amount_days: 24, status: 1},
-        {employee_id: 52, start_date: '2024-09-19', amount_days: 21, status: 1},
-        {employee_id: 52, start_date: '2024-10-16', amount_days: 20, status: 1},
-        {employee_id: 52, start_date: '2024-11-19', amount_days: 13, status: 1},
-        {employee_id: 1234, start_date: '2024-01-01', amount_days: 28, status: 1},
-        {employee_id: 1234, start_date: '2024-02-13', amount_days: 20, status: 1},
-        {employee_id: 1234, start_date: '2024-03-12', amount_days: 17, status: 1},
-        {employee_id: 1234, start_date: '2024-04-03', amount_days: 18, status: 1},
-        {employee_id: 1234, start_date: '2024-04-27', amount_days: 17, status: 1},
-        {employee_id: 1234, start_date: '2024-05-24', amount_days: 15, status: 1},
-        {employee_id: 1234, start_date: '2024-06-18', amount_days: 23, status: 1},
-        {employee_id: 1234, start_date: '2024-07-16', amount_days: 13, status: 1},
-        {employee_id: 1234, start_date: '2024-08-05', amount_days: 17, status: 1},
-        {employee_id: 1234, start_date: '2024-08-27', amount_days: 28, status: 1},
-        {employee_id: 1234, start_date: '2024-10-09', amount_days: 27, status: 1},
-        {employee_id: 1234, start_date: '2024-11-19', amount_days: 12, status: 1},
-    ]});
+    const [remoteData,  setRemoteData]  = useState({daysLeft: -1, myApplications: [], applications: []});
     const [applyData,   setApplyData]   = useState({isApplying: false, selectedDay: 14, firstSelector: null, secondSelector: null});
 
-    useEffect(() => {loadData(setLoaded, setRemoteData)});
-
-    if(!isAuth())
-    return (<Navigate to="/login" replace={true} />);
+    useEffect(() => {
+        if (authData.authStatus == AuthStatus.UNAUTHORIZED) { return; }
+        if (authData.userData == null) {return;};
+        async function load(){
+            try {
+                let response1 = await authData.postWithAuth("/api/get_applications", {users: [{employee_id: authData.userData.id}]});
+                let response2 = await authData.postWithAuth("/api/get_unit_applications", {employee_id: authData.userData.id, unit_id: authData.userData.unitId});
+                setRemoteData({ daysLeft: authData.userData.availableVacations, 
+                                myApplications: (response1.data[0]).applications, 
+                                applications:   (response2)});
+                setLoaded(true);
+            }
+            catch (error)
+            {
+                console.error(error);
+            }
+        }
+        load();
+    }, [authData]);
 
     if (!loaded){
         return (
@@ -161,7 +52,7 @@ export default function Apply() {
 
     return (
         <Box id="app" sx={{height: "100%", width: "100%", display: "flex"}}>
-            <Panel remoteData={remoteData} applyData={applyData} setApplyData={setApplyData} setRemoteData={setRemoteData}/>
+            <Panel remoteData={remoteData} applyData={applyData} setApplyData={setApplyData} setRemoteData={setRemoteData} setLoaded={setLoaded}/>
             <VerticalDivider/>
             <Timeline remoteData={remoteData} applyData={applyData} setApplyData={setApplyData} setRemoteData={setRemoteData}/>
             <VerticalDivider/>
@@ -173,8 +64,9 @@ export default function Apply() {
 
 
 
-function Panel({remoteData, applyData, setRemoteData, setApplyData}){
+function Panel({remoteData, applyData, setRemoteData, setApplyData, setLoaded}){
     const theme = useTheme();
+    const authData = useContext(authContext);
     
     return (
         <Box sx={{height: "100%", width: "380px", display: "flex", flexDirection: "column", flex: "none"}}>
@@ -195,7 +87,7 @@ function Panel({remoteData, applyData, setRemoteData, setApplyData}){
             <HorizontalDivider/>
             <Box sx={{height: "40px", display: "flex", alignItems: "center"}}>
                 <Typography variant="body1" fontWeight="600" gutterBottom sx={{paddingLeft: "10px", margin: "10px"}}>
-                    Малявко Ян Александрович
+                    {authData.userData.surname + ' ' + authData.userData.name + ' ' + authData.userData.patronymic}
                 </Typography>
             </Box>
             <HorizontalDivider/>
@@ -208,11 +100,11 @@ function Panel({remoteData, applyData, setRemoteData, setApplyData}){
             <Box sx={{flex:"1"}}>
                 {
                     applyData.isApplying &&
-                    <ApplyingPanel remoteData={remoteData} applyData={applyData} setApplyData={setApplyData} setRemoteData={setRemoteData} />
+                    <ApplyingPanel remoteData={remoteData} applyData={applyData} setApplyData={setApplyData} setRemoteData={setRemoteData} setLoaded={setLoaded}/>
                 }
                 {
                     (!applyData.isApplying) &&
-                    <DisplayPanel remoteData={remoteData} applyData={applyData} setApplyData={setApplyData} setRemoteData={setRemoteData} />
+                    <DisplayPanel remoteData={remoteData} applyData={applyData} setApplyData={setApplyData} setRemoteData={setRemoteData} setLoaded={setLoaded} />
                 }
             </Box>
         </Box>            
