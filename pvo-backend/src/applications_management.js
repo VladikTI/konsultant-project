@@ -24,6 +24,10 @@ async function applicationsManager(fastify, options){
                 for (line of rows){
                     output_rows.push({
                         employee_id: line.employee_id,
+                        name: line.name,
+                        surname: line.surname, 
+                        patronymic: line.patronymic,
+                        unit_id: line.unit_id,
                         start_date: DateTime.fromSQL(line.start_date).toISO({includeOffset: false}),
                         end_date: DateTime.fromSQL(line.end_date).toISO({includeOffset: false}),
                         days: line.days,
@@ -96,7 +100,7 @@ async function applicationsManager(fastify, options){
             let insert_data = req_data;
             insert_data.start_date = DateTime.toSQLDate(req_data.start_date);
             insert_data.end_date = DateTime.toSQLDate(req_data.end_date);
-            insert_data["status"] = awaiting;
+            insert_data["status"] = "awaiting";
             // const insert_data = {
             //     employee_id : req_data.employee_id,
             //     start_date: DateTime.toSQLDate(req_data.start_date),

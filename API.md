@@ -30,7 +30,7 @@
 ```
 {
     method: 'POST',
-    url: {authorization_server_url},
+    url: '/auth',
     headers: {
         'Content-Type': 'application/json'
     },
@@ -53,7 +53,15 @@
     token: "example_token",
     refresh_token: "example_refresh_token",
     token_expire_date: "0000-00-00T00:00:00",
-    refresh_token_expire_date: "0000-00-00T00:00:00"
+    refresh_token_expire_date: "0000-00-00T00:00:00",
+    employee_id: EMPLOYEE_ID,
+    name: NAME,
+    surname: SURNAME,
+    patronymic: PATRONYMIC,
+    position: POSITION, 
+    available_vacation: AVAILABLE_VACATION,
+    unit_id: UNIT_ID,
+    role_id: ROLE_ID
 }
 ```
 
