@@ -11,7 +11,7 @@ export const AuthStatus = {UNAUTHORIZED: 0, AUTHORIZED: 1, PENDING_AUTH: 2, PEND
 
 export function AuthProvider ({ children }) {
     const [authStatus,          setAuthStatus]          = useState(AuthStatus.AUTHORIZED);
-    const [userInfo,            setUserInfo]            = useState(null);
+    const [userData,            setUserData]            = useState(null);
     const [authToken,           setAuthToken]           = useState(null);
     const [authTokenExpire,     setAuthTokenExpire]     = useState(null);
     const [refreshToken,        setRefreshToken]        = useState(null);
@@ -23,18 +23,27 @@ export function AuthProvider ({ children }) {
         setAuthStatus(AuthStatus.PENDING_AUTH);
         try {
             let response = await axiosInstance.post( "/auth", { username: username, password: password } );
+            let data = response.data;
+            let userData_temp = {   id:                 data.employee_id,
+                                    name:               data.name,
+                                    surname:            data.surname,
+                                    patronymic:         data.patronymic,
+                                    position:           data.position,
+                                    availableVaction:   data.available_vaction,
+                                    unitId:             data.unit_id,
+                                    roleId:             data.role_id};
+            
+            setUserData             (userData_temp);
+            setAuthToken            (data.token);
+            setAuthTokenExpire      (data.token_expire_date);
+            setRefreshToken         (data.refresh_token);
+            setRefreshTokenExpire   (data.refresh_token_expire_date);
 
-            setUserInfo             (response.data.userInfo);
-            setAuthToken            (response.data.token);
-            setAuthTokenExpire      (response.data.token_expire_date);
-            setRefreshToken         (response.data.refresh_token);
-            setRefreshTokenExpire   (response.data.refresh_token_expire_date);
-
-            localStorage.setItem("userInfo",            response.data.userInfo);
-            localStorage.setItem("authToken",           response.data.token);
-            localStorage.setItem("authTokenExpire",     response.data.token_expire_date);
-            localStorage.setItem("refreshToken",        response.data.refresh_token);
-            localStorage.setItem("refreshTokenExpire",  response.data.refresh_token_expire_date);
+            localStorage.setItem("userData",            JSON.stringify(userData_temp));
+            localStorage.setItem("authToken",           data.token);
+            localStorage.setItem("authTokenExpire",     data.token_expire_date);
+            localStorage.setItem("refreshToken",        data.refresh_token);
+            localStorage.setItem("refreshTokenExpire",  data.refresh_token_expire_date);
 
             setAuthStatus(AuthStatus.AUTHORIZED);
         }
@@ -48,7 +57,7 @@ export function AuthProvider ({ children }) {
     async function logout (){
         setAuthStatus(AuthStatus.UNAUTHORIZED);
 
-        localStorage.removeItem("userInfo");
+        localStorage.removeItem("userData");
         localStorage.removeItem("authToken");
         localStorage.removeItem("authTokenExpire");
         localStorage.removeItem("refreshToken");
@@ -117,11 +126,12 @@ export function AuthProvider ({ children }) {
                         'Content-Type': 'application/json',
                     }
                 });
+                let data = response.data;
                 
-                setAuthToken            (response.data.token);
-                setAuthTokenExpire      (response.data.token_expire_date);
-                setRefreshToken         (response.data.refresh_token);
-                setRefreshTokenExpire   (response.data.refresh_token_expire_date);
+                setAuthToken            (data.token);
+                setAuthTokenExpire      (data.token_expire_date);
+                setRefreshToken         (data.refresh_token);
+                setRefreshTokenExpire   (data.refresh_token_expire_date);
 
                 localStorage.setItem("authToken",           authToken);
                 localStorage.setItem("authTokenExpire",     authTokenExpire);
@@ -150,13 +160,13 @@ export function AuthProvider ({ children }) {
     }, []);
 
     useEffect(() => {
-        let userInfo_temp           = localStorage.getItem('userInfo'); 
+        let userData_temp           = JSON.parse(localStorage.getItem('userData')); 
         let authToken_temp          = localStorage.getItem('authToken'); 
         let authTokenExpire_temp    = localStorage.getItem('authTokenExpire'); 
         let refreshToken_temp       = localStorage.getItem('refreshToken'); 
         let refreshTokenExpire_temp = localStorage.getItem('refreshTokenExpire'); 
 
-        setUserInfo(userInfo_temp);
+        setUserData(userData_temp);
         setAuthToken(authToken_temp);
         setAuthTokenExpire(authTokenExpire_temp);
         setRefreshToken(refreshToken_temp);
@@ -169,7 +179,7 @@ export function AuthProvider ({ children }) {
 
     return (
         <authContext.Provider value={{  authStatus:     authStatus, 
-                                        userInfo:       userInfo,
+                                        userData:       userData,
                                         login:          login,
                                         logout:         logout,
                                         postWithAuth:   postWithAuth,
