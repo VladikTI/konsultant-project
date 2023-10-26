@@ -29,7 +29,7 @@ export function AuthProvider ({ children }) {
                                     surname:            data.surname,
                                     patronymic:         data.patronymic,
                                     position:           data.position,
-                                    availableVaction:   data.available_vaction,
+                                    availableVacation:  data.available_vacation,
                                     unitId:             data.unit_id,
                                     roleId:             data.role_id};
             
