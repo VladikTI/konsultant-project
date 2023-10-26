@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Container, TextField, Typography } from "@mui/material";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { axiosInstance } from "../axiosInstance.js";
 
 import { authContext, AuthStatus } from "../contexts/authContext";
@@ -13,6 +13,8 @@ export default function Login() {
     const [error, setError] = useState("");
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
+
+    useEffect(() => {document.title = "Пора в отпуск: логин"}, []);
 
     const onSubmit = async (event) => {
         event.preventDefault();

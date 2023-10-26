@@ -39,8 +39,8 @@ export default function ApplyingPanel({remoteData, applyData, setRemoteData, set
     {
         setLoaded(false);
         async function foo() {
-            let response = await authData.postWithAuth("/api/create_application", { start_date:     startDate.format(), 
-                                                                                    end_date:       endDate.format(),
+            let response = await authData.postWithAuth("/api/create_application", { start_date:     startDate.format('YYYY-MM-DDTHH:mm:ss'), 
+                                                                                    end_date:       endDate.format('YYYY-MM-DDTHH:mm:ss'),
                                                                                     comment:        comment,
                                                                                     days:           endDate.diff(startDate, "days") + 1,
                                                                                     employee_id:    authData.userData.id } );

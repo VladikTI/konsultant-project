@@ -16,11 +16,15 @@ import { useNavigate } from "react-router-dom";
 import { AuthStatus, authContext } from "../contexts/authContext";
 
 export default function NavBar(){
-    const theme = useTheme();
     const authData = useContext(authContext);
+    const [role, setRole] = useState(0);
+
+    const theme = useTheme();
     const navigate = useNavigate();
 
-    var role = authData.userData.roleId;
+    useEffect(() => {
+        if (authData.userData !== null) setRole(authData.userData.roleId)
+    }, [authData]);
 
     function onEventClick(){
         navigate("/apply");
