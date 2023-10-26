@@ -8,6 +8,8 @@ const fastify = Fastify({ logger: true });
 
 fastify.register(dbconnector);
 
+const accessExpireTimeSeconds = 3600;
+const refreshExpireTimeSeconds = 86400;
 
 async function authRoutes (fastify, options){
 
@@ -29,8 +31,8 @@ async function authRoutes (fastify, options){
 
                     const newAccessToken = await generateAccessToken(username);
                     const newRefreshToken = await generateRefreshToken(username);
-                    let accessTokenExpire = DateTime.local();
-                    let refreshTokenExpire = accessTokenExpire.plus({days: 1});
+                    let accessTokenExpire = DateTime.local().plus({seconds: accessExpireTimeSeconds});
+                    let refreshTokenExpire = DateTime.local().plus({seconds: refreshExpireTimeSeconds});
                     
                     try {
                         await client.query(
@@ -135,7 +137,7 @@ async function authRoutes (fastify, options){
 
     async function generateAccessToken(username) {
         try {
-            const accessToken = fastify.jwt.sign({ name: username }, { expiresIn: '60000'});
+            const accessToken = fastify.jwt.sign({ name: username }, { expiresIn: accessExpireTimeSeconds});
             return accessToken;
         } catch (err) {
             console.error("Generate Access Token Error", err);
@@ -145,7 +147,7 @@ async function authRoutes (fastify, options){
 
     async function generateRefreshToken(username) {
         try {
-            const refreshToken = fastify.jwt.sign({ name: username }, { expiresIn: '120000'});
+            const refreshToken = fastify.jwt.sign({ name: username }, { expiresIn: refreshExpireTimeSeconds});
             return refreshToken;
         } catch (err) {
             console.error("Generate Refresh Token Error", err);
