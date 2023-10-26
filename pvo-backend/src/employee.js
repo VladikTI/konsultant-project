@@ -113,6 +113,8 @@ async function employeeRoutes (fastify, options){
 
         const req_data = request.body;
         const user_id = 1;
+        // const user_id = token_row.employee_id
+
 
         try {
             let insert_data = req_data;

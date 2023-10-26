@@ -16,7 +16,8 @@ async function authRoutes (fastify, options){
         const client = fastify.db.client;
         const { username, password } = request.body;
         try {
-            const {rows} = await client.query('SELECT employee_id, username, password FROM employee WHERE username=$1', [username]);
+            const {rows} = await client.query(
+                'SELECT employee.employee_id as employee_id, employee.name as name, surname, patronymic, position, username, password, available_vacation, unit.unit_id as unit_id, role.role_id as role_id FROM employee JOIN employee_unit ON employee.employee_id = employee_unit.employee_id JOIN unit ON employee_unit.unit_id = unit.unit_id JOIN employee_role ON employee.employee_id = employee_role.employee_id JOIN role ON employee_role.role_id = role.role_id WHERE username=$1;', [username]);
             if (rows.length === 0) {
                 // Пользователь с таким именем не найден
                 return reply.status(401).send({ error: 'Authentication failed' });
@@ -24,7 +25,7 @@ async function authRoutes (fastify, options){
                 // Сравниваем хешированный пароль из базы с введенным паролем и солью
                 const storedHashedPassword = rows[0].password;
                 const isPasswordValid = await bcrypt.compare(password, storedHashedPassword);
-            
+                
                 if (isPasswordValid) {
 
                     const newAccessToken = await generateAccessToken(username);
@@ -47,7 +48,15 @@ async function authRoutes (fastify, options){
                         token: newAccessToken, 
                         refresh_token: newRefreshToken,
                         token_expire_date: accessTokenExpire.toString(), 
-                        refresh_token_expire_date: refreshTokenExpire.toString()
+                        refresh_token_expire_date: refreshTokenExpire.toString(),
+                        employee_id: rows[0].employee_id,
+                        name: rows[0].name,
+                        surname: rows[0].surname,
+                        patronymic: rows[0].patronymic,
+                        position: rows[0].position,
+                        available_vacation: rows[0].available_vacation,
+                        unit_id: rows[0].unit_id,
+                        role_id: rows[0].role_id
                     }));
                 } else {
                 // Пароли не совпадают
@@ -148,23 +157,24 @@ async function authRoutes (fastify, options){
         }
     }
 
-    // async function determineAccess(client, token, token_name, role_name){
-    //     const token_row = await findTokenInDatabase(client, token, token_name);
+    async function determineAccess(client, token, token_name, role_name){
 
-    //     if (!token_row){
-    //         return reply.redirect(401, '/api/refresh');
-    //     }
+        const token_row = await findTokenInDatabase(client, token, token_name);
+
+        if (!token_row){
+            return reply.redirect(401, '/api/refresh');
+        }
         
-    //     try {
-    //         const employee_role = await client.query('SELECT * FROM employee_role JOIN role ON employee_role.role_id = role.role_id WHERE employee_id = $1 AND name = $2;',
-    //         [token_row.employee_id, role_name] );
-    //         return [token_row, employee_role];
-    //     } catch (err) {
-    //         console.error('Error determining access', err);
-    //         return [token_row, null];
-    //     }
+        try {
+            const employee_role = await client.query('SELECT employee_id.authentication, token, refreshToken,  FROM employee_role JOIN role ON employee_role.role_id = role.role_id WHERE employee_id = $1 AND name = $2;',
+            [token_row.employee_id, role_name] );
+            return [token_row, employee_role];
+        } catch (err) {
+            console.error('Error determining access', err);
+            return [token_row, null];
+        }
         
-    // }
+    }
 
 };
 

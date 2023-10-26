@@ -127,3 +127,10 @@ INSERT INTO role (
     updated_date,
     updated_by
 ) VALUES ('Employer', NOW(), 1), ('Employee', NOW(), 1);
+
+INSERT INTO employee_role ( employee_id, role_id, updated_date, updated_by) VALUES
+(1, 1, NOW(), 1);
+
+INSERT INTO unit (name, updated_date, updated_by) VALUES ('Unit 1', NOW(), 1);
+
+INSERT INTO employee_unit (employee_id, unit_id, updated_date, updated_by) VALUES(1, 1, NOW(), 1);
