@@ -16,7 +16,7 @@ import ApplyingPanel from "../components/apply/applyingPanel";
 import NavBar from "../components/navBar"
 import { AuthStatus, authContext } from "../contexts/authContext";
 
-export default function Apply() {    
+export default function Editing() {    
     const navigate = useNavigate();
     const authData = useContext(authContext);
     const [loaded,      setLoaded]      = useState(false);
@@ -93,7 +93,7 @@ function Panel({remoteData, applyData, setRemoteData, setApplyData, setLoaded}){
             <HorizontalDivider/>
             <Box sx={{height: "40px", display: "flex", alignItems: "center"}}>
                 <Typography variant="body1" fontWeight="600" gutterBottom sx={{paddingLeft: "10px", margin: "10px"}}>
-                    Доступные дни для отпуска: {authData.userData.availableVacation}
+                    Доступные дни для отпуска: {remoteData.daysLeft}
                 </Typography>
             </Box>
             <HorizontalDivider/>

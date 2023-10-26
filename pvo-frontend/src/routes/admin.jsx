@@ -10,6 +10,10 @@ import axios from "axios";
 import {useTheme} from '@mui/material/styles';
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import { useNavigate } from "react-router-dom";
+
+import VerticalDivider from "../components/verticalDivider";
+import NavBar from "../components/navBar"
 
 
 function CustomTabPanel(props) {
@@ -45,7 +49,18 @@ function a11yProps(index) {
     };
 }
 
-export default function BasicTabs() {
+export default function Admin(){    
+    const navigate = useNavigate();
+    return (
+        <Box id="app" sx={{height: "100%", width: "100%", display: "flex"}}>
+            <BasicTabs/>
+            <VerticalDivider/>
+            <NavBar/>
+        </Box>
+    );
+}
+
+function BasicTabs() {
     const roles = ['Руководитель', 'Сотрудник'];
     const [units, setUnits] = useState(["Отдел 1", "Отдел 2", "Отдел 3"]);
     const [value, setValue] = React.useState("");
@@ -127,7 +142,7 @@ export default function BasicTabs() {
 
     //Можно более аккуратно цвета настроить через стиль, но я этим сейчас заниматься не буду // 25.10.2023 6:43
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ height: "100%", flex: "auto"}}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs textColor="secondary" value={value} onChange={handleChange} aria-label="basic tabs example">
                     <Tab label="Добавить отдел" {...a11yProps(0)} />
@@ -152,7 +167,7 @@ export default function BasicTabs() {
                 <form><Button
                     variant="contained"
                     color="primary"
-                    style={{ position: 'absolute', right: '40px' }}
+                    style={{ marginLeft: "auto", marginRight: "0" }}
                     onClick={handleAddUnit}
                 >
                     Добавить
@@ -282,7 +297,7 @@ export default function BasicTabs() {
                 <form><Button
                     variant="contained"
                     color="primary"
-                    style={{ position: 'absolute', right: '40px' }}
+                    style={{ marginLeft: "auto", marginRight: "0" }}
                     onClick={handleAddEmployee}
                 >
                     Добавить
