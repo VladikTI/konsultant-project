@@ -129,7 +129,7 @@ export default function DateSlider({remoteData, applyData, setRemoteData, setApp
                     sx = {{
                         marginTop: "20px",
                         '& .MuiSlider-markLabel': {
-                            transform: "rotate(45deg)", 
+                            transform: "rotate(45deg) translate(-10px, 10px)",
                             paddingLeft: "20px"
                         },
                         '& .MuiSlider-mark': {

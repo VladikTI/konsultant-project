@@ -114,3 +114,14 @@
     border-radius: 5px;
 }
 
+.MuiSnackbar-anchorOriginCenterCenter {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+
+
+
+
+

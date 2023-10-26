@@ -75,6 +75,8 @@ export default function DisplayPanel({remoteData, applyData, setRemoteData, setA
 }
 
 var renderRow = props => {
+    const theme = useTheme();
+
     const { index, style, remoteData } = props;
 
     var application = remoteData.myApplications[index];
@@ -90,13 +92,22 @@ var renderRow = props => {
     else if (application.amount_days % 10 == 4) var ending = " дня";
     else var ending = " дней";
      
-    if (application.status == -1) var strStatus = "отказано";
-    else if (application.status == 0) var strStatus = "на рассмотрении";
-    else var strStatus = "одобрено";
+    if (application.status == -1) {
+        var strStatus = "отказано";
+        var color = theme.palette.red.light + '12';
+    } 
+    else if (application.status == 0) {
+        var strStatus = "на рассмотрении";
+        var color = theme.palette.blue.light + '12';
+    }
+    else {
+        var strStatus = "одобрено";
+        var color = theme.palette.green.light + '12';
+    }
 
     return (
         <ListItem style={{...style, padding: "10px", paddingBottom: "5px"}} key={index} component="div">
-            <Card variant="outlined" sx={{width:"100%", height:"100%", display: "flex", flexDirection: "column"}}>
+            <Card variant="outlined" sx={{width:"100%", height:"100%", display: "flex", flexDirection: "column", bgcolor: color}}>
                 <CardContent sx={{margin: "5px", padding: "5px", paddingLeft: "10px"}}>
                     <Typography variant="body1" sx={{fontWeight:"400"}} gutterBottom>
                         {dateBegin.toLocaleDateString('ru-RU')} - {dateEnd.toLocaleDateString('ru-RU')} 
