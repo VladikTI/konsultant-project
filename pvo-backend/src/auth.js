@@ -100,7 +100,7 @@ async function authRoutes (fastify, options){
         }
 
         const newAccessToken = await generateAccessToken(username);
-        const accessTokenExpire = DateTime.local();
+        const accessTokenExpire = DateTime.local().plus({seconds: accessExpireTimeSeconds});
 
         try {
             await client.query(
