@@ -8,6 +8,8 @@ import Box from '@mui/material/Box';
 import {Alert, Autocomplete, Button, TextField} from "@mui/material";
 import axios from "axios";
 import {useTheme} from '@mui/material/styles';
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
 
 function CustomTabPanel(props) {
@@ -60,6 +62,13 @@ export default function BasicTabs() {
     const [available_vacation, setAvailableVacation] = useState("");
     const [role_id, setRoleId] = useState(roles[0]);
     const [error, setError] = useState("");
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -73,6 +82,9 @@ export default function BasicTabs() {
             return;
         }
         setError("");
+        setSnackbarSeverity("success");
+        setSnackbarMessage("Сотрудник успешно добавлен");
+        setSnackbarOpen(true);
         axios
             .post('http://127.0.0.1:3000/api/add_employee', {username: username, password: password, name: name,
             surname: surname, patronymic: patronymic, position: position, available_vacation: available_vacation,
@@ -150,6 +162,24 @@ export default function BasicTabs() {
             <CustomTabPanel value={value} index={1}>
                 {error && <Alert severity="error" sx={{my: 2}}>{error}</Alert>}
                 <form>
+                    <Box sx={{ width: "100%" }}>
+                        {/* ... остальной код ... */}
+                        <Snackbar
+                            open={snackbarOpen}
+                            autoHideDuration={6000}
+                            onClose={handleSnackbarClose}
+                            anchorOrigin={{ vertical: "center", horizontal: "center" }} // Установите положение Snackbar по центру
+                        >
+                            <MuiAlert
+                                elevation={6}
+                                variant="filled"
+                                severity={snackbarSeverity}
+                                onClose={handleSnackbarClose}
+                            >
+                                {snackbarMessage}
+                            </MuiAlert>
+                        </Snackbar>
+                    </Box>
                     <Box marginBottom={2}>
                         <TextField
                             label="Фамилия"
@@ -219,10 +249,10 @@ export default function BasicTabs() {
                             value={value1}
                             onChange={(event, newValue1) => {
                                 setValue1(newValue1);
-                                if (value1 === "Сотрудник") {
+                                if (newValue1 === "Сотрудник") {
                                     setRoleId(2)
                                 }
-                                else if (value1 === "Руководитель") {
+                                else if (newValue1 === "Руководитель") {
                                     setRoleId(1)
                                 }
                             }}
@@ -238,7 +268,8 @@ export default function BasicTabs() {
                             value={value2}
                             onChange={(event, newValue2) => {
                                 setValue2(newValue2);
-                                setUnitId(units.indexOf(value2) + 1);
+                                const id = units.indexOf(newValue2) + 1;
+                                setUnitId(id);
                             }}
                             id="combo-box-demo"
                             options={units}

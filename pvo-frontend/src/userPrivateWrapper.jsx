@@ -2,7 +2,7 @@ import { Navigate, Outlet, Route } from "react-router-dom";
 import authStore from "./store.js";
 import { observer } from "mobx-react-lite";
 
-const PrivateRoute = (props) => {
+const UserPrivateWrapper = (props) => {
 
     if (authStore.isLoadingAuth) {
         return <div>Checking auth...</div>;
@@ -14,4 +14,4 @@ const PrivateRoute = (props) => {
     }
 };
 
-export default observer(PrivateRoute);
+export default observer(UserPrivateWrapper);
