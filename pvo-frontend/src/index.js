@@ -6,12 +6,11 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ruRU } from '@mui/x-date-pickers/locales';
 
 import Login from "./routes/login";
-import ErrorPage from "./error-page";
+import ErrorPage from "./errorPage";
 import Admin from "./routes/admin";
-import Editing from "./routes/editing"
 import Apply from "./routes/apply";
 import UserPrivateWrapper from './userPrivateWrapper';
-
+import AuthProvider from './contexts/authContext';
 
 const dayjs = require('dayjs')
 const localizedFormat = require('dayjs/plugin/localizedFormat')
@@ -37,10 +36,6 @@ const router = createBrowserRouter([
             {
                 path: "/admin",
                 element: <Admin/>,
-            },
-            {
-                path: "/editing",
-                element: <Editing/>,
             },
             {
                 path: "/apply",
@@ -98,7 +93,9 @@ const appTheme = createTheme(
 
 
 root.render(
-    <ThemeProvider theme={appTheme}>
-        <RouterProvider router={router}/>
-    </ThemeProvider>
+    <AuthProvider>
+        <ThemeProvider theme={appTheme}>
+            <RouterProvider router={router}/>
+        </ThemeProvider>
+    </AuthProvider>
 );

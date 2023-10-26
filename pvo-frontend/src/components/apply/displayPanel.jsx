@@ -12,12 +12,16 @@ import {
 import { useTheme } from '@mui/material/styles';
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from 'react-window';
+import { useContext, useState } from "react";
 
 import HorizontalDivider from "../../components/horizontalDivider";
 import VerticalDivider from "../../components/verticalDivider";
 
-export default function DisplayPanel({remoteData, applyData, setRemoteData, setApplyData}){
+import { AuthStatus, authContext } from "../../contexts/authContext";
+
+export default function DisplayPanel({remoteData, applyData, setRemoteData, setApplyData, setLoaded}){
     const theme = useTheme();
+    const authData = useContext(authContext);
 
     function onApplyButtonClick()
     {
@@ -56,7 +60,7 @@ export default function DisplayPanel({remoteData, applyData, setRemoteData, setA
                                 itemCount={remoteData.myApplications.length}
                                 overscanCount={5}
                             >
-                                {(props) => renderRow({...props, remoteData})}
+                                {(props) => renderRow({...props, remoteData, setLoaded, authData, theme})}
                             </FixedSizeList>
                         )}
 
@@ -75,34 +79,45 @@ export default function DisplayPanel({remoteData, applyData, setRemoteData, setA
 }
 
 var renderRow = props => {
-    const theme = useTheme();
 
-    const { index, style, remoteData } = props;
+    const { index, style, remoteData, setLoaded, authData, theme} = props;
 
     var application = remoteData.myApplications[index];
-    //    {"Начало: " + application.start_date + " длительность: " + application.amount_days + " статус: " + application.status} />
+
+    //console.log(JSON.stringify(application))
+    //    {"Начало: " + application.start_date + " длительность: " + application.days + " статус: " + application.status} />
     
     var dateBegin = new Date(Date.parse(application.start_date));
     var dateEnd = new Date(dateBegin);
-    dateEnd.setDate(dateEnd.getDate() + application.amount_days - 1);
+    dateEnd.setDate(dateEnd.getDate() + application.days - 1);
 
-    if (application.amount_days % 10 == 1) var ending = " день";
-    else if (application.amount_days % 10 == 2) var ending = " дня";
-    else if (application.amount_days % 10 == 3) var ending = " дня";
-    else if (application.amount_days % 10 == 4) var ending = " дня";
+    if (application.days % 10 == 1) var ending = " день";
+    else if (application.days % 10 == 2) var ending = " дня";
+    else if (application.days % 10 == 3) var ending = " дня";
+    else if (application.days % 10 == 4) var ending = " дня";
     else var ending = " дней";
      
-    if (application.status == -1) {
+    if (application.status == "rejected") {
         var strStatus = "отказано";
         var color = theme.palette.red.light + '12';
     } 
-    else if (application.status == 0) {
+    else if (application.status == "awaiting") {
         var strStatus = "на рассмотрении";
         var color = theme.palette.blue.light + '12';
     }
     else {
         var strStatus = "одобрено";
         var color = theme.palette.green.light + '12';
+    }
+
+    function onDeleteButtonClick()
+    {
+        setLoaded(false);
+        async function foo() {
+            let response = await authData.postWithAuth("/api/delete_application", { request_id: application.request_id } );
+        };
+        
+        foo().then(()=>{window.location.reload(false);});
     }
 
     return (
@@ -113,14 +128,14 @@ var renderRow = props => {
                         {dateBegin.toLocaleDateString('ru-RU')} - {dateEnd.toLocaleDateString('ru-RU')} 
                     </Typography>
                     <Typography variant="h5" sx={{fontWeight:"400"}} gutterBottom>
-                        {application.amount_days + ending} 
+                        {application.days + ending} 
                     </Typography>
                     <Typography variant="h6" sx={{fontWeight:"400"}}>
                         {"Статус: " + strStatus} 
                     </Typography>
                 </CardContent>
                 <CardActions sx={{marginTop: "auto", padding: "0px", paddingLeft: "10px", paddingBottom: "5px"}}>
-                    <Button size="medium" color="red" sx={{padding:"5px"}}>Убрать заявку</Button>
+                    <Button size="medium" color="red" onClick={onDeleteButtonClick} sx={{padding:"5px"}}>Убрать заявку</Button>
                 </CardActions>
             </Card>
         </ListItem>
