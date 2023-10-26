@@ -23,6 +23,8 @@ export default function Apply() {
     const [remoteData,  setRemoteData]  = useState({daysLeft: -1, myApplications: [], applications: []});
     const [applyData,   setApplyData]   = useState({isApplying: false, selectedDay: 14, firstSelector: null, secondSelector: null});
 
+    useEffect(() => {document.title = "Пора в отпуск: подача заявки"}, []);
+
     useEffect(() => {
         if (authData.authStatus == AuthStatus.UNAUTHORIZED) { return; }
         if (authData.userData == null) {return;};

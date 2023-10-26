@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState} from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -81,6 +81,10 @@ function BasicTabs() {
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     const [snackbarMessage, setSnackbarMessage] = useState("");
 
+    const theme = useTheme();
+    
+    useEffect(() => {document.title = "Пора в отпуск: административная панель"}, []);
+
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
     };
@@ -137,8 +141,6 @@ function BasicTabs() {
                 console.error('Ошибка при отправке запроса:', error);
             });
     };
-
-    const theme = useTheme();
 
     //Можно более аккуратно цвета настроить через стиль, но я этим сейчас заниматься не буду // 25.10.2023 6:43
     return (
