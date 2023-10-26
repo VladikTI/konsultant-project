@@ -5,10 +5,6 @@ import authRoutes from './auth.js';
 
 import fastifyJwt from '@fastify/jwt';
 
-// import validateToken from './validateToken.js';
-
-
-
 const fastify = Fastify({
     logger: true
 });
@@ -54,6 +50,8 @@ async function unitRoutes(fastify, options){
         // }
 
         const user_id = 1;
+        // const user_id = token_row.employee_id
+
 
         const req_data = request.body;
 

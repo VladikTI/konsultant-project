@@ -20,7 +20,7 @@ async function applicationsManager(fastify, options){
         try {
             for (const req of req_data){
                 let output_rows = new Array();  
-                const rows = await getApplications(client, req.employee_id);
+                const rows = await getApplications(client, req_data.employee_id);
                 for (line of rows){
                     output_rows.push({
                         employee_id: line.employee_id,
@@ -40,6 +40,45 @@ async function applicationsManager(fastify, options){
 
                 data_result.push(data);
             }
+            const result = {
+                data: data_result
+            }
+            return reply.code(200).send(JSON.stringify(result));
+        } catch (err){
+            console.log('Error in /api/get_applications: ', err);
+            return reply.code(500).send('Internal Server Error: error on getting applications');
+        }
+    })
+
+    fastify.get('/api/get_unit_applications', async(request, reply) =>{
+        const client = await fastify.db.client;
+        const req_data = request.body;
+        let data_result = new Array();
+        try {  
+            let output_rows = new Array();  
+            const rows = await getUnitApplications(client, req_data.unit_id);
+            for (line of rows){
+                output_rows.push({
+                    employee_id: line.employee_id,
+                    name: line.name,
+                    surname: line.surname,
+                    patronymic: line.patronymic,
+                    start_date: DateTime.fromSQL(line.start_date).toISO({includeOffset: false}),
+                    end_date: DateTime.fromSQL(line.end_date).toISO({includeOffset: false}),
+                    days: line.days,
+                    status: line.status,
+                    comment: line.comment,
+                    created_date: DateTime.fromSQL(line.created_date).toISO({includeOffset: false}),
+                    file_id: line.file_id
+                });
+            };
+            const data = {
+                employee_id: req.employee_id,
+                applications: output_rows
+            }
+
+            data_result.push(data);
+            
             const result = {
                 data: data_result
             }
@@ -112,7 +151,21 @@ async function applicationsManager(fastify, options){
     async function getApplications(client, employee_id){
         try {
             const {rows} = await client.query(
-                'SELECT request_id, employee_id, start_date, end_date, days, status, comment, created_date, file_id FROM request WHERE employee_id = $1;', [employee_id]
+                'SELECT name, surname, patronymic, request_id, employee_id, start_date, end_date, days, status, comment, created_date, file_id FROM request JOIN employee ON request.employee_id = employee.employee_id WHERE employee_id = $1;', 
+                [employee_id]
+            )
+            return rows;
+        } catch (err) {
+            console.log('Get applications error: ', err);
+            throw new Error(err);
+        }
+    };
+    
+    async function getUnitApplications(client, unit_id){
+        try {
+            const {rows} = await client.query(
+                'SELECT name, surname, patronymic, request_id, employee_id, start_date, end_date, days, status, comment, created_date, file_id FROM request JOIN employee ON request.employee_id = employee.employee_id WHERE unit_id = $1;', 
+                [unit_id]
             )
             return rows;
         } catch (err) {
