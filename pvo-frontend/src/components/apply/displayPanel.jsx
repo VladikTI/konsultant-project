@@ -84,7 +84,7 @@ var renderRow = props => {
 
     var application = remoteData.myApplications[index];
 
-    console.log(JSON.stringify(application))
+    //console.log(JSON.stringify(application))
     //    {"Начало: " + application.start_date + " длительность: " + application.days + " статус: " + application.status} />
     
     var dateBegin = new Date(Date.parse(application.start_date));

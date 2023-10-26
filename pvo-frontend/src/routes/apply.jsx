@@ -31,7 +31,7 @@ export default function Apply() {
                 let response2 = await authData.postWithAuth("/api/get_unit_applications", {employee_id: authData.userData.id, unit_id: authData.userData.unitId});
                 setRemoteData({ daysLeft: authData.userData.availableVacations, 
                                 myApplications: (response1.data[0]).applications, 
-                                applications:   (response2)});
+                                applications:   (response2.data)});
                 setLoaded(true);
             }
             catch (error)
