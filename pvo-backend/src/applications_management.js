@@ -3,6 +3,8 @@ import Fastify from 'fastify';
 import dbconnector from './db.js';
 import authRoutes from './auth.js';
 
+import { DateTime } from 'luxon';
+
 const fastify = Fastify({
     logger: true
 });
@@ -21,15 +23,20 @@ async function applicationsManager(fastify, options){
             for (const req of req_data){
                 let output_rows = new Array();
                 const rows = await getApplications(client, req.employee_id);
-                for (line of rows){
+                for (let line of rows){
                     output_rows.push({
                         employee_id: line.employee_id,
-                        start_date: DateTime.fromSQL(line.start_date).toISO({includeOffset: false}),
-                        end_date: DateTime.fromSQL(line.end_date).toISO({includeOffset: false}),
+                        start_date: DateTime.fromJSDate(line.start_date).toISO({includeOffset: false}),
+                        end_date: DateTime.fromJSDate(line.end_date).toISO({includeOffset: false}),
                         days: line.days,
+                        name: line.name,
+                        surname: line.surname, 
+                        patronymic: line.patronymic,
+                        unit_id: line.unit_id,
                         status: line.status,
+                        request_id: line.request_id,
                         comment: line.comment,
-                        created_date: DateTime.fromSQL(line.created_date).toISO({includeOffset: false}),
+                        created_date: DateTime.fromJSDate(line.created_date).toISO({includeOffset: false}),
                         file_id: line.file_id
                     });
                 };
@@ -47,39 +54,30 @@ async function applicationsManager(fastify, options){
         }
     })
 
-    fastify.get('/api/get_unit_applications', async(request, reply) =>{
+    fastify.post('/api/get_unit_applications', async(request, reply) =>{
         const client = await fastify.db.client;
         const req_data = request.body;
-        let data_result = new Array();
         try {  
             let output_rows = new Array();  
             const rows = await getUnitApplications(client, req_data.unit_id);
-            for (line of rows){
+            for (let line of rows){
                 output_rows.push({
                     employee_id: line.employee_id,
                     name: line.name,
                     surname: line.surname,
                     patronymic: line.patronymic,
-                    start_date: DateTime.fromSQL(line.start_date).toISO({includeOffset: false}),
-                    end_date: DateTime.fromSQL(line.end_date).toISO({includeOffset: false}),
+                    start_date: DateTime.fromJSDate(line.start_date).toISO({includeOffset: false}),
+                    end_date: DateTime.fromJSDate(line.end_date).toISO({includeOffset: false}),
                     days: line.days,
                     status: line.status,
                     comment: line.comment,
-                    created_date: DateTime.fromSQL(line.created_date).toISO({includeOffset: false}),
+                    request_id: line.request_id,
+                    created_date: DateTime.fromJSDate(line.created_date).toISO({includeOffset: false}),
                     file_id: line.file_id
                 });
             };
-            const data = {
-                employee_id: req.employee_id,
-                applications: output_rows
-            }
-
-            data_result.push(data);
             
-            const result = {
-                data: data_result
-            }
-            return reply.code(200).send(JSON.stringify(result));
+            return reply.code(200).send(JSON.stringify(output_rows));
         } catch (err){
             console.log('Error in /api/get_applications: ', err);
             return reply.code(500).send('Internal Server Error: error on getting applications');
@@ -91,9 +89,11 @@ async function applicationsManager(fastify, options){
         const req_data = request.body;
         try {
             let insert_data = req_data;
-            insert_data.start_date = DateTime.toSQLDate(req_data.start_date);
-            insert_data.end_date = DateTime.toSQLDate(req_data.end_date);
-            insert_data["status"] = awaiting;
+            insert_data.start_date = DateTime.fromISO(req_data.start_date).toSQLDate();
+            insert_data.end_date = DateTime.fromISO(req_data.end_date).toSQLDate();
+            insert_data["status"] = "awaiting";
+            console.log(insert_data.start_date);
+            console.log(insert_data.end_date);
             // const insert_data = {
             //     employee_id : req_data.employee_id,
             //     start_date: DateTime.toSQLDate(req_data.start_date),
@@ -161,7 +161,7 @@ async function applicationsManager(fastify, options){
     async function getUnitApplications(client, unit_id){
         try {
             const {rows} = await client.query(
-                'SELECT name, surname, patronymic, request_id, employee_id, start_date, end_date, days, status, comment, created_date, file_id FROM request JOIN employee ON request.employee_id = employee.employee_id WHERE unit_id = $1;', 
+                'SELECT employee.name, surname, patronymic, request_id, employee.employee_id, start_date, end_date, days, status, comment, created_date, file_id FROM employee JOIN employee_unit ON employee.employee_id = employee_unit.employee_id JOIN unit ON employee_unit.unit_id = unit.unit_id JOIN employee_role ON employee.employee_id = employee_role.employee_id JOIN request ON request.employee_id = employee.employee_id WHERE employee_unit.unit_id = $1;', 
                 [unit_id]
             )
             return rows;
@@ -174,7 +174,7 @@ async function applicationsManager(fastify, options){
     async function createApplication(client, insert_data){
         try {
             const {rows} = await client.query(
-                'INSERT INTO request (employee_id, start_date, end_date, days, status, comment, created_date, updated_date, updated_by) VALUES ($1, $2, $3, $4, $5, NOW(), NOW(), $6);', 
+                'INSERT INTO request (employee_id, start_date, end_date, days, status, comment, created_date, updated_date, updated_by) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW(), $7);', 
                 [insert_data.employee_id, insert_data.start_date, insert_data.end_date, insert_data.days,
                  insert_data.status, insert_data.comment, insert_data.employee_id]
             );
