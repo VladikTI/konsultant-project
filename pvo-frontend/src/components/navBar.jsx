@@ -49,10 +49,10 @@ export default function NavBar(){
                     <EventIcon sx={{transform: "scale(2.0)"}}/>
                 </IconButton>
                 {
-                    role === 1 && 
+                    /*role === 1 && 
                     <IconButton sx={{height: "60px", width: "60px"}} onClick = {onEditClick}>
                         <EditIcon sx={{transform: "scale(2.0)"}}/>
-                    </IconButton>
+                    </IconButton>*/
                 }
                 {
                     role === 1 &&
