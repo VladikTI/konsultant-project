@@ -78,7 +78,7 @@
 ```
 {
     method: 'GET',
-    url: {employees_storage_url},
+    url: '/api/get_employees',
     headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${token}`
@@ -91,7 +91,12 @@
 {
     "data": [{
             "employee_id": EMPLOYEE_ID,
-            "name": NAME
+            "name": NAME,
+            "surname": SURNAME,
+            "patronymic": PATRONYMIC,
+            "position": POSITION,
+            "unit_id": UNIT_ID
+
         }]
 }
 ```

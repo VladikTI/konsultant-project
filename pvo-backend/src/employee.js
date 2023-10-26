@@ -225,7 +225,7 @@ async function employeeRoutes (fastify, options){
     async function getEmployees(client){
         try {
             const {rows} = await client.query(
-                'SELECT employee.employee_id, employee.name as name, surname, patronymic, position, unit.name as unit FROM employee JOIN employee_unit ON employee.employee_id = employee_unit.employee_id JOIN unit ON employee_unit.unit_id = unit.unit_id; '
+                'SELECT employee.employee_id, employee.name as name, surname, patronymic, position, unit.unit_id as unit_id FROM employee JOIN employee_unit ON employee.employee_id = employee_unit.employee_id JOIN unit ON employee_unit.unit_id = unit.unit_id; '
             )
             return rows;
         } catch (err) {
