@@ -13,14 +13,14 @@ fastify.register(authRoutes);
 
 async function applicationsManager(fastify, options){
 
-    fastify.get('/api/get_applications', async(request, reply) =>{
+    fastify.post('/api/get_applications', async(request, reply) =>{
         const client = await fastify.db.client;
-        const req_data = request.body;
+        const req_data = request.body.users;
         let data_result = new Array();
         try {
             for (const req of req_data){
-                let output_rows = new Array();  
-                const rows = await getApplications(client, req_data.employee_id);
+                let output_rows = new Array();
+                const rows = await getApplications(client, req.employee_id);
                 for (line of rows){
                     output_rows.push({
                         employee_id: line.employee_id,
@@ -151,7 +151,7 @@ async function applicationsManager(fastify, options){
     async function getApplications(client, employee_id){
         try {
             const {rows} = await client.query(
-                'SELECT name, surname, patronymic, request_id, employee_id, start_date, end_date, days, status, comment, created_date, file_id FROM request JOIN employee ON request.employee_id = employee.employee_id WHERE employee_id = $1;', 
+                'SELECT name, surname, patronymic, request_id, employee.employee_id, start_date, end_date, days, status, comment, created_date, file_id FROM request JOIN employee ON request.employee_id = employee.employee_id WHERE employee.employee_id = $1;', 
                 [employee_id]
             )
             return rows;
