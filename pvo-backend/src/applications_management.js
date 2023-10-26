@@ -40,10 +40,7 @@ async function applicationsManager(fastify, options){
 
                 data_result.push(data);
             }
-            const result = {
-                data: data_result
-            }
-            return reply.code(200).send(JSON.stringify(result));
+            return reply.code(200).send(JSON.stringify(data_result));
         } catch (err){
             console.log('Error in /api/get_applications: ', err);
             return reply.code(500).send('Internal Server Error: error on getting applications');
